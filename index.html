@@ -1,0 +1,3419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>二次元茶话会</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ==================== CSS Variables & Reset ==================== */
+:root {
+  --primary: #6366f1;
+  --primary-light: #8b8ff5;
+  --bg-gradient-1: #0f0c29;
+  --bg-gradient-2: #302b63;
+  --bg-gradient-3: #24243e;
+  --glass-bg: rgba(255,255,255,0.12);
+  --glass-border: rgba(255,255,255,0.18);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-muted: rgba(255,255,255,0.4);
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  font-size: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+  min-height: 100vh;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.2); border-radius:4px; }
+input, textarea, button, select { font-family:inherit; outline:none; }
+a { color:var(--primary-light); text-decoration:none; }
+
+/* ==================== Glass Card ==================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ==================== Login Page ==================== */
+#loginPage {
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  z-index:1000;
+}
+#loginPage .bg-deco {
+  position:absolute; inset:0;
+  overflow:hidden; pointer-events:none;
+}
+#loginPage .bg-deco span {
+  position:absolute;
+  font-size:80px; opacity:0.06; animation:float 20s infinite;
+}
+@keyframes float {
+  0%,100% { transform:translateY(0) rotate(0deg); }
+  33% { transform:translateY(-30px) rotate(5deg); }
+  66% { transform:translateY(20px) rotate(-3deg); }
+}
+.login-card {
+  max-width:420px; width:90%;
+  padding:40px 32px;
+  text-align:center;
+  position:relative; z-index:1;
+}
+.login-card .logo {
+  font-size:40px; margin-bottom:8px;
+}
+.login-card h1 {
+  font-size:28px; font-weight:700;
+  margin-bottom:4px;
+}
+.login-card .subtitle {
+  color:var(--text-secondary); font-size:14px;
+  margin-bottom:32px;
+}
+.login-card .tabs {
+  display:flex; gap:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:var(--radius-sm);
+  padding:4px;
+  margin-bottom:24px;
+}
+.login-card .tabs button {
+  flex:1; padding:10px;
+  border:none; border-radius:6px;
+  background:transparent; color:var(--text-secondary);
+  font-size:14px; font-weight:500; cursor:pointer;
+  transition:all 0.3s;
+}
+.login-card .tabs button.active {
+  background:var(--primary);
+  color:#fff;
+}
+.login-card .field {
+  margin-bottom:16px;
+  text-align:left;
+}
+.login-card .field label {
+  font-size:12px; color:var(--text-secondary);
+  display:block; margin-bottom:6px;
+}
+.login-card .field input {
+  width:100%; padding:12px 16px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-sm);
+  color:#fff; font-size:15px;
+  transition:border-color 0.3s;
+}
+.login-card .field input:focus { border-color:var(--primary); }
+.login-card .field input::placeholder { color:var(--text-muted); }
+.login-btn {
+  width:100%; padding:14px;
+  border:none; border-radius:var(--radius-sm);
+  background:var(--primary);
+  color:#fff; font-size:16px; font-weight:600;
+  cursor:pointer; transition:opacity 0.3s;
+  margin-top:8px;
+}
+.login-btn:hover { opacity:0.9; }
+.login-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.login-error {
+  color:var(--danger); font-size:13px;
+  margin-top:12px; min-height:20px;
+}
+.login-card .admin-link {
+  display:inline-block; margin-top:16px;
+  color:var(--text-muted); font-size:13px; cursor:pointer;
+  transition:color 0.3s;
+}
+.login-card .admin-link:hover { color:var(--primary-light); }
+.admin-login-row {
+  display:flex; gap:8px; margin-top:8px;
+}
+.admin-login-row input { flex:1; }
+.admin-login-row button {
+  padding:12px 20px;
+  border:none; border-radius:var(--radius-sm);
+  background:var(--warning); color:#000;
+  font-size:14px; font-weight:600; cursor:pointer;
+}
+
+/* ==================== Main Layout ==================== */
+#appMain { display:none; }
+.app-header {
+  position:fixed; top:0; left:0; right:0;
+  z-index:100;
+  padding:12px 16px;
+  background:rgba(15,12,41,0.7);
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+  border-bottom:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.app-header .brand {
+  display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px;
+}
+.app-header .brand .logo-icon { font-size:24px; }
+.app-header .header-actions { display:flex; align-items:center; gap:12px; }
+.app-header .header-actions .btn-icon {
+  width:36px; height:36px; border-radius:50%;
+  border:none; background:rgba(255,255,255,0.1);
+  color:#fff; cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.3s;
+}
+.app-header .header-actions .btn-icon:hover { background:rgba(255,255,255,0.2); }
+.app-header .header-actions .my-avatar {
+  width:34px; height:34px; border-radius:50%;
+  object-fit:cover; cursor:pointer;
+  border:2px solid var(--primary);
+  transition:border-color 0.3s;
+}
+
+/* ==================== Bottom Nav ==================== */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  z-index:100;
+  display:flex;
+  background:rgba(15,12,41,0.7);
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+  border-top:1px solid var(--glass-border);
+  padding:4px 0; padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-nav .nav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:6px 0 4px; gap:2px;
+  border:none; background:transparent;
+  color:var(--text-muted); cursor:pointer;
+  font-size:10px; transition:color 0.3s;
+}
+.bottom-nav .nav-item.active { color:var(--primary-light); }
+.bottom-nav .nav-item svg { width:24px; height:24px; }
+.bottom-nav .nav-item .badge {
+  position:absolute; top:2px; right:calc(50% - 18px);
+  background:var(--danger); color:#fff;
+  font-size:10px; min-width:18px; height:18px;
+  border-radius:9px; display:flex; align-items:center; justify-content:center;
+  padding:0 4px;
+}
+.bottom-nav .nav-item .nav-icon-wrap { position:relative; display:flex; }
+
+/* ==================== Content Area ==================== */
+.content-area {
+  padding-top:58px;
+  padding-bottom:66px;
+  min-height:100vh;
+}
+.page { display:none; padding:16px; }
+.page.active { display:block; }
+
+/* ==================== Create Post ==================== */
+.create-post {
+  margin-bottom:16px;
+  padding:16px;
+  cursor:pointer;
+  display:flex; align-items:center; gap:12px;
+}
+.create-post .cp-avatar {
+  width:40px; height:40px; border-radius:50%;
+  object-fit:cover; flex-shrink:0;
+}
+.create-post .cp-input {
+  flex:1; padding:10px 16px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);
+  border-radius:20px;
+  color:var(--text-secondary); font-size:14px;
+  text-align:left; cursor:pointer;
+  transition:border-color 0.3s;
+}
+.create-post .cp-input:hover { border-color:var(--primary); }
+
+/* ==================== Post Card ==================== */
+.post-card {
+  padding:16px; margin-bottom:12px;
+  transition:transform 0.2s;
+}
+.post-card:hover { transform:translateY(-1px); }
+.post-card.pinned {
+  border-color:var(--warning);
+  background:rgba(245,158,11,0.06);
+}
+.post-card .pin-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; color:var(--warning); margin-bottom:8px;
+}
+.post-card .post-header {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:10px;
+}
+.post-card .post-header .p-avatar {
+  width:36px; height:36px; border-radius:50%;
+  object-fit:cover; cursor:pointer;
+  transition:opacity 0.3s;
+}
+.post-card .post-header .p-avatar:hover { opacity:0.8; }
+.post-card .post-header .p-author { font-weight:600; font-size:14px; cursor:pointer; }
+.post-card .post-header .p-author:hover { color:var(--primary-light); }
+.post-card .post-header .p-time { font-size:12px; color:var(--text-muted); margin-left:auto; }
+.post-card .topic-tag {
+  display:inline-block; padding:2px 10px;
+  border-radius:10px; font-size:11px;
+  background:rgba(99,102,241,0.2); color:var(--primary-light);
+  margin-bottom:8px;
+}
+.post-card .post-title {
+  font-size:14px; font-weight:600; margin-bottom:6px;
+}
+.post-card .post-content {
+  font-size:14px; line-height:1.7;
+  color:var(--text-secondary); margin-bottom:12px;
+  white-space:pre-wrap; word-break:break-word;
+}
+.post-card .post-actions {
+  display:flex; gap:16px;
+  border-top:1px solid var(--glass-border);
+  padding-top:10px; margin-top:4px;
+}
+.post-card .post-actions button {
+  display:flex; align-items:center; gap:4px;
+  border:none; background:transparent;
+  color:var(--text-muted); cursor:pointer;
+  font-size:13px; transition:color 0.3s;
+  padding:4px 8px; border-radius:6px;
+}
+.post-card .post-actions button:hover { background:rgba(255,255,255,0.05); }
+.post-card .post-actions button.liked { color:var(--danger); }
+.post-card .post-actions button.favorited { color:var(--warning); }
+.post-card .post-actions button svg { width:18px; height:18px; }
+
+/* ==================== Modal Base ==================== */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:500;
+  display:none; align-items:center; justify-content:center;
+  animation:fadeIn 0.2s;
+}
+.modal-overlay.show { display:flex; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal {
+  max-width:520px; width:92%;
+  max-height:85vh; overflow-y:auto;
+  padding:24px; animation:slideUp 0.25s;
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.modal .modal-header {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+.modal .modal-header h2 { font-size:20px; font-weight:600; }
+.modal .modal-close {
+  width:32px; height:32px; border-radius:50%;
+  border:none; background:rgba(255,255,255,0.1);
+  color:#fff; cursor:pointer; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal .field-group { margin-bottom:16px; }
+.modal .field-group label {
+  font-size:13px; color:var(--text-secondary);
+  display:block; margin-bottom:6px;
+}
+.modal .field-group input,
+.modal .field-group textarea,
+.modal .field-group select {
+  width:100%; padding:10px 14px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius-sm);
+  color:#fff; font-size:14px;
+  transition:border-color 0.3s;
+}
+.modal .field-group input:focus,
+.modal .field-group textarea:focus,
+.modal .field-group select:focus { border-color:var(--primary); }
+.modal .field-group textarea { min-height:80px; resize:vertical; }
+.modal .field-group select option { background:#1a1a2e; color:#fff; }
+.modal .btn-primary {
+  padding:12px 24px; border:none;
+  border-radius:var(--radius-sm);
+  background:var(--primary); color:#fff;
+  font-size:15px; font-weight:600; cursor:pointer;
+  transition:opacity 0.3s;
+}
+.modal .btn-primary:hover { opacity:0.9; }
+.modal .btn-danger {
+  padding:10px 20px; border:none;
+  border-radius:var(--radius-sm);
+  background:var(--danger); color:#fff;
+  font-size:14px; cursor:pointer;
+}
+.modal .btn-warning {
+  padding:10px 20px; border:none;
+  border-radius:var(--radius-sm);
+  background:var(--warning); color:#000;
+  font-size:14px; cursor:pointer;
+}
+
+/* ==================== Comments ==================== */
+.comment-section { margin-top:12px; border-top:1px solid var(--glass-border); padding-top:12px; }
+.comment-input-area {
+  display:flex; gap:8px; margin-bottom:12px;
+}
+.comment-input-area input {
+  flex:1; padding:8px 14px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);
+  border-radius:20px; color:#fff; font-size:13px;
+}
+.comment-input-area button {
+  padding:8px 16px; border:none;
+  border-radius:20px; background:var(--primary);
+  color:#fff; font-size:13px; cursor:pointer;
+}
+.comment-item {
+  display:flex; gap:8px; padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.comment-item:last-child { border-bottom:none; }
+.comment-item .c-avatar {
+  width:28px; height:28px; border-radius:50%;
+  object-fit:cover; cursor:pointer; flex-shrink:0;
+}
+.comment-item .c-body { flex:1; }
+.comment-item .c-author { font-size:12px; font-weight:600; cursor:pointer; }
+.comment-item .c-author:hover { color:var(--primary-light); }
+.comment-item .c-text { font-size:13px; color:var(--text-secondary); margin-top:2px; }
+.comment-item .c-time { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+/* ==================== Discussion Page ==================== */
+.topic-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:10px; margin-bottom:20px;
+}
+.topic-card {
+  padding:14px; text-align:center; cursor:pointer;
+  transition:transform 0.2s;
+}
+.topic-card:hover { transform:translateY(-2px); }
+.topic-card .topic-icon { font-size:28px; margin-bottom:6px; }
+.topic-card .topic-name { font-size:13px; font-weight:500; }
+.topic-card .topic-count { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+/* ==================== Chat Page ==================== */
+.chat-tabs {
+  display:flex; gap:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:var(--radius-sm); padding:4px;
+  margin-bottom:16px;
+}
+.chat-tabs button {
+  flex:1; padding:10px; border:none; border-radius:6px;
+  background:transparent; color:var(--text-secondary);
+  font-size:14px; font-weight:500; cursor:pointer;
+  transition:all 0.3s;
+}
+.chat-tabs button.active { background:var(--primary); color:#fff; }
+
+/* Group Chat */
+.group-chat-box {
+  display:flex; flex-direction:column;
+  height:calc(100vh - 200px);
+}
+.group-chat-msgs {
+  flex:1; overflow-y:auto; padding:12px;
+}
+.gc-msg {
+  display:flex; gap:8px; margin-bottom:12px;
+  align-items:flex-start;
+}
+.gc-msg .gc-avatar {
+  width:32px; height:32px; border-radius:50%;
+  object-fit:cover; flex-shrink:0; cursor:pointer;
+}
+.gc-msg .gc-bubble {
+  max-width:75%;
+}
+.gc-msg .gc-author { font-size:12px; font-weight:600; margin-bottom:2px; }
+.gc-msg .gc-author:hover { color:var(--primary-light); cursor:pointer; }
+.gc-msg .gc-text {
+  background:rgba(99,102,241,0.15);
+  padding:8px 14px; border-radius:14px 14px 14px 4px;
+  font-size:14px; line-height:1.5;
+}
+.gc-msg .gc-time { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.gc-input-area {
+  display:flex; gap:8px; padding:12px;
+  border-top:1px solid var(--glass-border);
+}
+.gc-input-area input {
+  flex:1; padding:10px 16px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);
+  border-radius:20px; color:#fff; font-size:14px;
+}
+.gc-input-area button {
+  padding:10px 20px; border:none; border-radius:20px;
+  background:var(--primary); color:#fff;
+  font-size:14px; cursor:pointer;
+}
+
+/* Private Chat */
+.private-chat-layout {
+  display:flex; gap:12px;
+  height:calc(100vh - 200px);
+}
+.pc-contacts {
+  width:140px; flex-shrink:0;
+  overflow-y:auto; padding:8px;
+}
+.pc-contact {
+  display:flex; align-items:center; gap:8px;
+  padding:8px; border-radius:var(--radius-sm);
+  cursor:pointer; margin-bottom:4px;
+  transition:background 0.3s;
+}
+.pc-contact:hover { background:rgba(255,255,255,0.06); }
+.pc-contact.active { background:rgba(99,102,241,0.15); }
+.pc-contact img { width:32px; height:32px; border-radius:50%; object-fit:cover; }
+.pc-contact .pc-name { font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pc-chat-area {
+  flex:1; display:flex; flex-direction:column;
+  border-left:1px solid var(--glass-border);
+  padding-left:12px;
+}
+.pc-chat-area .pc-chat-header {
+  font-size:14px; font-weight:600; padding:8px 0 12px;
+  border-bottom:1px solid var(--glass-border);
+}
+.pc-msgs { flex:1; overflow-y:auto; padding:12px 0; }
+.pc-msg-item {
+  display:flex; gap:8px; margin-bottom:10px;
+  align-items:flex-start;
+}
+.pc-msg-item .pc-msg-avatar {
+  width:28px; height:28px; border-radius:50%;
+  object-fit:cover; flex-shrink:0;
+}
+.pc-msg-item .pc-msg-bubble {
+  background:rgba(255,255,255,0.08);
+  padding:8px 14px; border-radius:14px;
+  font-size:14px; max-width:70%;
+}
+.pc-msg-item.self { flex-direction:row-reverse; }
+.pc-msg-item.self .pc-msg-bubble {
+  background:rgba(99,102,241,0.25);
+}
+.pc-msg-item .pc-msg-time { font-size:11px; color:var(--text-muted); margin-top:2px; }
+.pc-msg-item.self .pc-msg-time { text-align:right; }
+.pc-input-area {
+  display:flex; gap:8px; padding:8px 0;
+}
+.pc-input-area input {
+  flex:1; padding:8px 16px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--glass-border);
+  border-radius:20px; color:#fff; font-size:14px;
+}
+.pc-input-area button {
+  padding:8px 20px; border:none; border-radius:20px;
+  background:var(--primary); color:#fff; font-size:14px; cursor:pointer;
+}
+
+/* ==================== Profile Page ==================== */
+.profile-header {
+  text-align:center; padding:24px 16px;
+  margin-bottom:16px;
+}
+.profile-header .ph-avatar {
+  width:72px; height:72px; border-radius:50%;
+  object-fit:cover; margin-bottom:12px;
+  border:3px solid var(--primary);
+  cursor:pointer;
+}
+.profile-header .ph-name { font-size:20px; font-weight:600; }
+.profile-header .ph-bio { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+.profile-header .ph-stats {
+  display:flex; justify-content:center; gap:24px;
+  margin-top:12px; font-size:13px;
+}
+.profile-header .ph-stats span { color:var(--text-secondary); }
+.profile-header .ph-stats strong { color:var(--text-primary); }
+.profile-actions {
+  display:flex; gap:8px; justify-content:center;
+  margin-top:12px;
+}
+.profile-actions button {
+  padding:8px 20px; border:none; border-radius:20px;
+  font-size:13px; font-weight:500; cursor:pointer;
+  transition:opacity 0.3s;
+}
+.profile-actions button:hover { opacity:0.8; }
+.profile-actions .btn-primary2 { background:var(--primary); color:#fff; }
+.profile-actions .btn-outline {
+  background:transparent; border:1px solid var(--glass-border);
+  color:var(--text-primary);
+}
+.profile-actions .following-btn { background:rgba(255,255,255,0.1); color:var(--text-primary); }
+.profile-tabs {
+  display:flex; gap:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:var(--radius-sm); padding:4px;
+  margin-bottom:16px;
+}
+.profile-tabs button {
+  flex:1; padding:10px; border:none; border-radius:6px;
+  background:transparent; color:var(--text-secondary);
+  font-size:13px; cursor:pointer; transition:all 0.3s;
+}
+.profile-tabs button.active { background:var(--primary); color:#fff; }
+
+/* ==================== Settings Page ==================== */
+.settings-list { margin-bottom:16px; }
+.settings-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px;
+  margin-bottom:8px;
+  cursor:pointer; transition:background 0.3s;
+}
+.settings-item:hover { background:rgba(255,255,255,0.03); }
+.settings-item .si-label { font-size:14px; }
+.settings-item .si-value { font-size:13px; color:var(--text-secondary); }
+.color-picker-grid {
+  display:grid; grid-template-columns:repeat(6,1fr);
+  gap:10px; margin:8px 0;
+}
+.color-pick {
+  width:100%; aspect-ratio:1;
+  border-radius:50%; border:3px solid transparent;
+  cursor:pointer; transition:border-color 0.3s;
+}
+.color-pick.selected { border-color:#fff; }
+
+/* ==================== User Profile Modal (visiting) ==================== */
+.visit-profile { text-align:center; padding:16px; }
+.visit-profile .vp-avatar {
+  width:80px; height:80px; border-radius:50%;
+  object-fit:cover; margin-bottom:12px;
+  border:3px solid var(--primary);
+}
+.visit-profile .vp-name { font-size:22px; font-weight:700; }
+.visit-profile .vp-bio { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+.visit-profile .vp-stats {
+  display:flex; justify-content:center; gap:32px;
+  margin:16px 0; font-size:14px;
+}
+.visit-profile .vp-stats span { color:var(--text-secondary); }
+.visit-profile .vp-actions {
+  display:flex; gap:10px; justify-content:center; margin-top:12px;
+}
+.visit-profile .vp-actions button {
+  padding:10px 24px; border:none; border-radius:20px;
+  font-size:14px; font-weight:500; cursor:pointer;
+}
+.visit-profile .vp-posts-title {
+  font-size:15px; font-weight:600; text-align:left;
+  margin:20px 0 12px; padding-top:16px;
+  border-top:1px solid var(--glass-border);
+}
+
+/* ==================== Admin Dashboard ==================== */
+.admin-dashboard { min-height:calc(100vh - 124px); }
+.admin-stats-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px; margin-bottom:20px;
+}
+.admin-stat-card {
+  padding:16px; text-align:center;
+}
+.admin-stat-card .stat-num {
+  font-size:28px; font-weight:700; margin-bottom:4px;
+}
+.admin-stat-card .stat-label { font-size:13px; color:var(--text-secondary); }
+.admin-tabs {
+  display:flex; gap:4px;
+  background:rgba(255,255,255,0.06);
+  border-radius:var(--radius-sm); padding:4px;
+  margin-bottom:16px; overflow-x:auto;
+}
+.admin-tabs button {
+  padding:10px 16px; border:none; border-radius:6px;
+  background:transparent; color:var(--text-secondary);
+  font-size:13px; white-space:nowrap; cursor:pointer;
+  transition:all 0.3s;
+}
+.admin-tabs button.active { background:var(--primary); color:#fff; }
+.admin-table-wrap { overflow-x:auto; }
+.admin-table {
+  width:100%; border-collapse:collapse;
+  font-size:13px;
+}
+.admin-table th {
+  text-align:left; padding:10px 12px;
+  border-bottom:1px solid var(--glass-border);
+  color:var(--text-secondary); font-weight:500;
+}
+.admin-table td {
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.admin-table .status-badge {
+  display:inline-block; padding:2px 8px; border-radius:10px;
+  font-size:11px;
+}
+.admin-table .status-badge.active { background:rgba(34,197,94,0.2); color:var(--success); }
+.admin-table .status-badge.banned { background:rgba(239,68,68,0.2); color:var(--danger); }
+.admin-table .status-badge.admin { background:rgba(245,158,11,0.2); color:var(--warning); }
+.admin-table .action-btns { display:flex; gap:4px; flex-wrap:wrap; }
+.admin-table .action-btns button {
+  padding:4px 10px; border:none; border-radius:6px;
+  font-size:12px; cursor:pointer; transition:opacity 0.3s;
+}
+.admin-table .action-btns button:hover { opacity:0.8; }
+.admin-table .action-btns .btn-ban { background:var(--danger); color:#fff; }
+.admin-table .action-btns .btn-unban { background:var(--success); color:#fff; }
+.admin-table .action-btns .btn-delete { background:var(--danger); color:#fff; }
+.admin-table .action-btns .btn-pin { background:var(--warning); color:#000; }
+.admin-table .action-btns .btn-unpin { background:var(--text-muted); color:#fff; }
+
+
+/* ==================== Media Upload & Display ==================== */
+.media-upload-area {
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+}
+.media-upload-btn {
+  padding:10px 18px; border:1px dashed var(--glass-border);
+  border-radius:var(--radius-sm); background:rgba(255,255,255,0.04);
+  color:var(--text-secondary); cursor:pointer; font-size:14px;
+  transition:border-color 0.3s; display:inline-flex; align-items:center; gap:6px;
+}
+.media-upload-btn:hover { border-color:var(--primary); color:var(--primary-light); }
+.media-preview-grid {
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+}
+.media-preview-item {
+  position:relative; width:80px; height:80px;
+  border-radius:8px; overflow:hidden;
+  background:rgba(255,255,255,0.05); flex-shrink:0;
+}
+.media-preview-item img,
+.media-preview-item video {
+  width:100%; height:100%; object-fit:cover;
+}
+.media-preview-item .remove-media {
+  position:absolute; top:2px; right:2px;
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(0,0,0,0.6); color:#fff;
+  border:none; cursor:pointer; font-size:12px;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+}
+.post-media-grid {
+  display:grid; gap:6px; margin-bottom:10px;
+  border-radius:var(--radius-sm); overflow:hidden;
+}
+.post-media-grid.c1 { grid-template-columns:1fr; }
+.post-media-grid.c2 { grid-template-columns:1fr 1fr; }
+.post-media-grid.c3p { grid-template-columns:repeat(3,1fr) }
+.post-media-grid img,
+.post-media-grid video {
+  width:100%; border-radius:6px; cursor:pointer;
+  transition:opacity 0.3s; display:block;
+}
+.post-media-grid img:hover { opacity:0.9; }
+.post-media-grid video { max-height:400px; }
+.post-media-item {
+  position:relative; overflow:hidden; border-radius:6px;
+}
+.post-media-item .video-play-icon {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(0,0,0,0.5); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; pointer-events:none;
+}
+.detail-media-item {
+  margin-bottom:10px; border-radius:var(--radius-sm); overflow:hidden;
+}
+.detail-media-item img,
+.detail-media-item video {
+  width:100%; border-radius:var(--radius-sm); display:block;
+}
+.detail-media-item video { max-height:500px; }
+.media-limit-hint {
+  font-size:12px; color:var(--text-muted); margin-top:4px;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width:640px) {
+  .private-chat-layout { flex-direction:column; height:auto; }
+  .pc-contacts { width:100%; max-height:120px; display:flex; overflow-x:auto; gap:4px; padding:4px 0; }
+  .pc-contacts .pc-contact { flex-shrink:0; }
+  .pc-chat-area { border-left:none; padding-left:0; }
+  .admin-stats-grid { grid-template-columns:repeat(2,1fr); }
+  .login-card { padding:28px 20px; }
+}
+
+/* ==================== Empty State ==================== */
+.empty-state {
+  text-align:center; padding:48px 16px;
+  color:var(--text-muted);
+}
+.empty-state .empty-icon { font-size:48px; margin-bottom:12px; }
+.empty-state .empty-text { font-size:15px; }
+
+/* ==================== Toast ==================== */
+.toast-container {
+  position:fixed; top:74px; right:16px;
+  z-index:9999; display:flex; flex-direction:column; gap:8px;
+}
+.toast {
+  padding:12px 20px;
+  border-radius:var(--radius-sm);
+  font-size:14px; animation:slideIn 0.3s;
+  max-width:320px;
+}
+.toast.success { background:rgba(34,197,94,0.9); color:#fff; }
+.toast.error { background:rgba(239,68,68,0.9); color:#fff; }
+.toast.info { background:rgba(99,102,241,0.9); color:#fff; }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ==================== UI Beautification & Redesign ==================== */
+
+/* ---- Page Transition ---- */
+.page {
+  animation: pageFadeIn 0.35s ease-out;
+}
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Enhanced Glass Effect ---- */
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.glass:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ---- Animated Background Gradient ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(99,102,241,0.08), transparent),
+    radial-gradient(ellipse 500px 500px at 90% 80%, rgba(236,72,153,0.06), transparent),
+    radial-gradient(ellipse 400px 400px at 50% 50%, rgba(99,102,241,0.04), transparent);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgShift 15s ease-in-out infinite alternate;
+}
+@keyframes bgShift {
+  0% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(1%,-1%) scale(1.02); }
+  66% { transform: translate(-1%,1%) scale(0.98); }
+  100% { transform: translate(0.5%,0.5%) scale(1.01); }
+}
+
+/* ---- Floating Particles ---- */
+.particle-container {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute; border-radius: 50%;
+  opacity: 0.08; animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.08; }
+  90% { opacity: 0.08; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+
+/* ---- Login Page Enhancement ---- */
+.login-card {
+  animation: loginCardIn 0.6s cubic-bezier(0.16,1,0.3,1);
+  overflow: hidden;
+}
+.login-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), #ec4899, var(--primary));
+  background-size: 300% 100%;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 300% 0; }
+  100% { background-position: -300% 0; }
+}
+@keyframes loginCardIn {
+  from { opacity: 0; transform: scale(0.92) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---- Input Enhancement ---- */
+.login-card .field input:focus,
+.modal .field-group input:focus,
+.modal .field-group textarea:focus,
+.modal .field-group select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+  transform: translateY(-1px);
+}
+
+/* ---- Button Enhancement ---- */
+.login-btn, .btn-primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.login-btn:hover, .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(99,102,241,0.3);
+}
+.login-btn:active, .btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+.login-btn::after, .btn-primary::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
+}
+
+/* ---- Bottom Nav Enhancement ---- */
+.bottom-nav {
+  padding-top: 8px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+}
+.bottom-nav .nav-item {
+  position: relative;
+  padding: 4px 0 6px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.bottom-nav .nav-item.active {
+  color: var(--primary-light);
+  transform: translateY(-2px);
+}
+.bottom-nav .nav-item.active svg {
+  filter: drop-shadow(0 0 8px rgba(99,102,241,0.3));
+}
+.bottom-nav .nav-item::before {
+  content: '';
+  position: absolute; top: 0; left: 50%;
+  width: 0; height: 3px;
+  background: var(--primary);
+  border-radius: 0 0 3px 3px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  transform: translateX(-50%);
+}
+.bottom-nav .nav-item.active::before {
+  width: 24px;
+}
+.bottom-nav .nav-item:active {
+  transform: scale(0.92);
+}
+
+/* ---- Post Card Enhancement ---- */
+.post-card {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  cursor: default;
+}
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+}
+.post-card .post-header .p-avatar {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  border: 2px solid transparent;
+}
+.post-card .post-header .p-avatar:hover {
+  border-color: var(--primary);
+  transform: scale(1.08);
+}
+.post-card .post-actions button {
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  border-radius: 8px;
+}
+.post-card .post-actions button:hover {
+  background: rgba(255,255,255,0.08);
+  transform: scale(1.05);
+}
+.post-card .post-actions button:active {
+  transform: scale(0.92);
+}
+.post-card .post-actions button.liked {
+  color: var(--danger);
+  text-shadow: 0 0 12px rgba(239,68,68,0.3);
+}
+.post-card .post-actions button.favorited {
+  color: var(--warning);
+  text-shadow: 0 0 12px rgba(245,158,11,0.3);
+}
+
+/* ---- Create Post Enhancement ---- */
+.create-post {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.create-post:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 30px rgba(99,102,241,0.15);
+  transform: translateY(-1px);
+}
+.create-post .cp-avatar {
+  transition: transform 0.3s;
+  border: 2px solid transparent;
+}
+.create-post:hover .cp-avatar {
+  border-color: var(--primary);
+}
+
+/* ---- Topic Card Enhancement ---- */
+.topic-card {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.topic-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 40px rgba(99,102,241,0.2);
+}
+.topic-card:active {
+  transform: translateY(-1px) scale(0.97);
+}
+.topic-card .topic-icon {
+  transition: transform 0.3s;
+  display: inline-block;
+}
+.topic-card:hover .topic-icon {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+/* ---- Modal Enhancement ---- */
+.modal {
+  animation: modalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  max-height: 88vh;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-overlay {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: overlayFade 0.25s;
+}
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---- Chat Enhancement ---- */
+.gc-msg .gc-avatar, .pc-contact img, .pc-msg-avatar {
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+.gc-msg .gc-avatar:hover, .pc-contact img:hover {
+  border-color: var(--primary);
+  transform: scale(1.08);
+}
+.gc-msg .gc-text {
+  transition: all 0.3s;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.pc-msg-item.self .pc-msg-bubble {
+  background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.15));
+}
+.pc-contact.active {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05));
+  border-left: 3px solid var(--primary);
+}
+
+/* ---- Comment Enhancement ---- */
+.comment-item {
+  transition: background 0.3s;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 0 -8px;
+}
+.comment-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+.comment-input-area input {
+  transition: all 0.3s;
+}
+.comment-input-area input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
+
+/* ---- Admin Enhancement ---- */
+.admin-stat-card {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.admin-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 40px rgba(99,102,241,0.15);
+}
+.admin-stat-card .stat-num {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---- Scrollbar Enhancement ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ---- Profile Enhancement ---- */
+.profile-header .ph-avatar {
+  transition: transform 0.3s, border-color 0.3s;
+}
+.profile-header .ph-avatar:hover {
+  transform: scale(1.05);
+  border-color: var(--primary-light);
+}
+.settings-item {
+  transition: all 0.3s;
+  border-radius: 12px;
+}
+.settings-item:hover {
+  background: rgba(255,255,255,0.05);
+  transform: translateX(4px);
+}
+
+/* ---- Like Animation ---- */
+@keyframes likeBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  75% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.post-card .post-actions button.liked svg {
+  animation: likeBounce 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ---- Media Grid Enhancement ---- */
+.post-media-grid {
+  border-radius: 12px;
+  overflow: hidden;
+  gap: 4px;
+}
+.post-media-grid img, .post-media-grid video {
+  transition: all 0.3s;
+}
+.post-media-grid img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* ---- Tab Enhancement ---- */
+.login-card .tabs button,
+.chat-tabs button,
+.profile-tabs button,
+.admin-tabs button {
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.login-card .tabs button.active,
+.chat-tabs button.active,
+.profile-tabs button.active,
+.admin-tabs button.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  box-shadow: 0 4px 16px rgba(99,102,241,0.25);
+}
+.login-card .tabs button:active,
+.chat-tabs button:active,
+.profile-tabs button:active,
+.admin-tabs button:active {
+  transform: scale(0.95);
+}
+
+/* ---- Header Enhancement ---- */
+.app-header {
+  background: rgba(15,12,41,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.app-header .my-avatar {
+  transition: all 0.3s;
+  border-width: 2px;
+}
+.app-header .my-avatar:hover {
+  border-color: var(--primary-light);
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(99,102,241,0.3);
+}
+.app-header .btn-icon {
+  transition: all 0.3s;
+}
+.app-header .btn-icon:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.1);
+}
+
+/* ---- Pin Badge Enhancement ---- */
+.post-card.pinned {
+  background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(245,158,11,0.02));
+  border-color: rgba(245,158,11,0.3);
+}
+
+/* ---- Toast Enhancement ---- */
+.toast {
+  animation: toastIn 0.4s cubic-bezier(0.16,1,0.3,1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  backdrop-filter: blur(12px);
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px) scale(0.9); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ---- Responsive Refinements ---- */
+@media (max-width:640px) {
+  .login-card { margin: 16px; }
+  .post-card .post-content { font-size: 13px; }
+  .bottom-nav .nav-item svg { width: 22px; height: 22px; }
+  .admin-stats-grid { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .topic-grid { grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); }
+  .app-header .brand span:last-child { font-size: 15px; }
+}
+
+</style>
+</head>
+<body>
+<div class="particle-container" id="particleContainer"></div>
+
+<!-- ==================== Toast Container ==================== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ==================== Login Page ==================== -->
+<div id="loginPage">
+  <div class="bg-deco">
+    <span style="top:10%;left:10%;animation-delay:0s">🌸</span>
+    <span style="top:20%;right:15%;animation-delay:3s;font-size:60px">🎀</span>
+    <span style="bottom:30%;left:8%;animation-delay:6s;font-size:70px">✨</span>
+    <span style="bottom:15%;right:10%;animation-delay:2s">🎭</span>
+    <span style="top:45%;left:20%;animation-delay:5s;font-size:50px">🍵</span>
+    <span style="top:35%;right:25%;animation-delay:7s;font-size:55px">🎴</span>
+    <span style="bottom:50%;left:25%;animation-delay:4s;font-size:45px">🌟</span>
+    <span style="bottom:20%;left:50%;animation-delay:8s;font-size:65px">🦋</span>
+  </div>
+  <div class="glass login-card">
+    <div class="logo">🍵</div>
+    <h1>二次元茶话会</h1>
+    <p class="subtitle">和同好一起分享你的热爱</p>
+    
+    <div class="tabs" id="loginTabs">
+      <button class="active" data-tab="login">登录</button>
+      <button data-tab="register">注册</button>
+    </div>
+    
+    <div id="loginForm">
+      <div class="field">
+        <label>手机号</label>
+        <input type="tel" id="loginPhone" placeholder="请输入手机号" maxlength="11">
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" id="loginPassword" placeholder="请输入密码">
+      </div>
+      <button class="login-btn" id="loginBtn">登 录</button>
+      <div class="login-error" id="loginError"></div>
+      <span class="admin-link" id="showAdminLogin">管理员登录 →</span>
+    </div>
+    
+    <div id="registerForm" style="display:none">
+      <div class="field">
+        <label>手机号</label>
+        <input type="tel" id="regPhone" placeholder="请输入手机号" maxlength="11">
+      </div>
+      <div class="field">
+        <label>昵称</label>
+        <input type="text" id="regNickname" placeholder="设置你的昵称" maxlength="20">
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" id="regPassword" placeholder="设置密码（至少6位）">
+      </div>
+      <div class="field">
+        <label>确认密码</label>
+        <input type="password" id="regPassword2" placeholder="再次输入密码">
+      </div>
+      <button class="login-btn" id="registerBtn">注 册</button>
+      <div class="login-error" id="regError"></div>
+    </div>
+    
+    <div id="adminLoginForm" style="display:none;margin-top:8px">
+      <div class="field">
+        <label>管理员密钥</label>
+        <input type="password" id="adminKey" placeholder="请输入管理员密钥">
+      </div>
+      <div class="admin-login-row">
+        <input type="text" id="adminPhone" placeholder="管理员账号">
+        <button id="adminLoginBtn">验证</button>
+      </div>
+      <div class="login-error" id="adminError"></div>
+      <span class="admin-link" id="backToUserLogin">← 用户登录</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Main App ==================== -->
+<div id="appMain">
+  <!-- Header -->
+  <header class="app-header" id="appHeader">
+    <div class="brand">
+      <span class="logo-icon">🍵</span>
+      <span>二次元茶话会</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btnNotifications" title="通知" onclick="showToast('暂无新通知','info')">🔔</button>
+      <img id="headerAvatar" class="my-avatar" src="" alt="avatar" onclick="showMyProfile()">
+    </div>
+  </header>
+  
+  <!-- Content Area -->
+  <div class="content-area" id="contentArea">
+    <!-- Page: Home -->
+    <div class="page active" id="pageHome">
+      <div class="create-post glass" onclick="openCreatePost()">
+        <img id="homeAvatar" class="cp-avatar" src="" alt="">
+        <div class="cp-input">有什么想和大家分享的？</div>
+      </div>
+      <div id="postFeed"></div>
+    </div>
+    
+    <!-- Page: Discussion -->
+    <div class="page" id="pageDiscussion">
+      <div class="topic-grid" id="topicGrid"></div>
+      <div id="discussionPosts"></div>
+    </div>
+    
+    <!-- Page: Chat -->
+    <div class="page" id="pageChat">
+      <div class="chat-tabs" id="chatTabs">
+        <button class="active" data-chat-tab="group">群聊</button>
+        <button data-chat-tab="private">私聊</button>
+      </div>
+      <div id="groupChat" class="group-chat-box"></div>
+      <div id="privateChat" style="display:none">
+        <div class="private-chat-layout">
+          <div class="pc-contacts glass" id="pcContacts"></div>
+          <div class="pc-chat-area glass" id="pcChatArea">
+            <div class="pc-chat-header" id="pcChatHeader">选择一个好友开始聊天</div>
+            <div class="pc-msgs" id="pcMsgs"></div>
+            <div class="pc-input-area" id="pcInputArea">
+              <input type="text" id="pcInput" placeholder="输入消息..." maxlength="500">
+              <button onclick="sendPrivateMsg()">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Page: Profile -->
+    <div class="page" id="pageProfile">
+      <div class="profile-header glass" id="myProfileHeader"></div>
+      <div class="profile-actions" id="myProfileActions"></div>
+      <div class="profile-tabs" id="profileTabs">
+        <button class="active" data-ptab="posts">我的帖子</button>
+        <button data-ptab="settings">设置</button>
+      </div>
+      <div id="profilePosts"></div>
+      <div id="profileSettings" style="display:none"></div>
+    </div>
+  </div>
+  
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-page="home">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+      <span>首页</span>
+    </button>
+    <button class="nav-item" data-page="discussion">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+      <span>讨论</span>
+    </button>
+    <button class="nav-item" data-page="chat">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <span>聊天</span>
+    </button>
+    <button class="nav-item" data-page="profile">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <span>我的</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ==================== Modal: Create Post ==================== -->
+<div class="modal-overlay" id="createPostModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>发布帖子</h2>
+      <button class="modal-close" onclick="closeModal('createPostModal')">✕</button>
+    </div>
+    <div class="field-group">
+      <label>标题（可选）</label>
+      <input type="text" id="postTitle" placeholder="输入帖子标题..." maxlength="50">
+    </div>
+    <div class="field-group">
+      <label>内容</label>
+      <textarea id="postContent" placeholder="分享你的想法..." rows="4"></textarea>
+    </div>
+    <div class="field-group">
+      <label>选择话题</label>
+      <select id="postTopic">
+        <option value="acg">🎮 ACG综合</option>
+        <option value="anime">🎬 新番讨论</option>
+        <option value="manga">📖 漫画推荐</option>
+        <option value="game">🎮 游戏交流</option>
+        <option value="music">🎵 音乐推荐</option>
+        <option value="art">🎨 创作展示</option>
+        <option value="cos">📸 COS摄影</option>
+        <option value="life">💬 日常灌水</option>
+        <option value="other">📌 其他</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label>添加图片/视频</label>
+      <div class="media-upload-area">
+        <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display:none" onchange="handleMediaSelect()">
+        <button type="button" class="media-upload-btn" onclick="document.getElementById('mediaInput').click()">📸 选择图片或视频</button>
+        <span class="media-limit-hint">最多9个，每个≤5MB</span>
+      </div>
+      <div class="media-preview-grid" id="mediaPreview"></div>
+    </div>
+    <button class="btn-primary" onclick="submitPost()" style="width:100%">发布</button>
+  </div>
+</div>
+
+<!-- ==================== Modal: Post Detail ==================== -->
+<div class="modal-overlay" id="postDetailModal">
+  <div class="modal glass" style="max-width:560px">
+    <div class="modal-header">
+      <h2>帖子详情</h2>
+      <button class="modal-close" onclick="closeModal('postDetailModal')">✕</button>
+    </div>
+    <div id="postDetailContent"></div>
+  </div>
+</div>
+
+<!-- ==================== Modal: Visit Profile ==================== -->
+<div class="modal-overlay" id="visitProfileModal">
+  <div class="modal glass" style="max-width:440px">
+    <div class="modal-header">
+      <h2>用户主页</h2>
+      <button class="modal-close" onclick="closeModal('visitProfileModal')">✕</button>
+    </div>
+    <div id="visitProfileContent" class="visit-profile"></div>
+  </div>
+</div>
+
+<!-- ==================== Modal: Edit Profile ==================== -->
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>编辑资料</h2>
+      <button class="modal-close" onclick="closeModal('editProfileModal')">✕</button>
+    </div>
+    <div class="field-group">
+      <label>昵称</label>
+      <input type="text" id="editNickname" maxlength="20">
+    </div>
+    <div class="field-group">
+      <label>个人简介</label>
+      <textarea id="editBio" rows="3" maxlength="150">这个人很懒，什么都没写~</textarea>
+    </div>
+    <div class="field-group">
+      <label>头像链接（可选）</label>
+      <input type="text" id="editAvatar" placeholder="输入图片URL或留空使用默认头像">
+    </div>
+    <button class="btn-primary" onclick="saveProfile()" style="width:100%">保存</button>
+  </div>
+</div>
+
+<!-- ==================== Modal: Admin Dashboard ==================== -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal glass" style="max-width:700px;max-height:88vh">
+    <div class="modal-header">
+      <h2>🛡️ 管理后台</h2>
+      <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+    </div>
+    <div class="admin-dashboard" id="adminDashboard"></div>
+  </div>
+</div>
+
+
+<!-- ==================== Modal: Admin Edit User ==================== -->
+<div class="modal-overlay" id="adminEditUserModal">
+  <div class="modal glass" style="max-width:400px">
+    <div class="modal-header">
+      <h2>编辑用户信息</h2>
+      <button class="modal-close" onclick="closeModal('adminEditUserModal')">✕</button>
+    </div>
+    <div id="adminEditUserContent">
+      <div class="field-group">
+        <label>用户昵称</label>
+        <input type="text" id="adminEditNickname" maxlength="20">
+      </div>
+      <div class="field-group">
+        <label>新密码（留空则不修改）</label>
+        <input type="text" id="adminEditPassword" placeholder="输入新密码" maxlength="30">
+      </div>
+      <button class="btn-primary" onclick="saveAdminEdit()" style="width:100%">保存修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Modal: Color Theme ==================== -->
+<div class="modal-overlay" id="colorThemeModal">
+  <div class="modal glass" style="max-width:400px">
+    <div class="modal-header">
+      <h2>主题颜色</h2>
+      <button class="modal-close" onclick="closeModal('colorThemeModal')">✕</button>
+    </div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px">选择你喜欢的主题色：</p>
+    <div class="color-picker-grid" id="colorPickerGrid"></div>
+    <button class="btn-primary" onclick="closeModal('colorThemeModal')" style="width:100%;margin-top:16px">完成</button>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   JavaScript - 二次元茶话会 完整应用逻辑
+   ================================================================== */
+
+// ==================== Data Layer ====================
+const DATA_KEY = 'erciyuan_teahouse_data';
+// ==================== Backend API ====================
+const API_BASE_URL = localStorage.getItem('tea_api_url') || (location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? 'http://localhost:3003' : location.origin);
+
+function getApiToken() { return sessionStorage.getItem('tea_api_token') || localStorage.getItem('tea_api_token'); }
+function setApiToken(t, p) {
+  sessionStorage.setItem('tea_api_token', t);
+  if (p) localStorage.setItem('tea_api_token', t);
+}
+function clearApiToken() {
+  sessionStorage.removeItem('tea_api_token');
+  localStorage.removeItem('tea_api_token');
+}
+
+async function apiPost(path, body) {
+  const token = getApiToken();
+  const headers = {'Content-Type':'application/json'};
+  if (token) headers['x-auth-token'] = token;
+  const r = await fetch(API_BASE_URL + path, {method:'POST', headers, body: JSON.stringify(body)});
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || '请求失败');
+  return j;
+}
+
+async function apiGet(path) {
+  const token = getApiToken();
+  const headers = {};
+  if (token) headers['x-auth-token'] = token;
+  const r = await fetch(API_BASE_URL + path, {headers});
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || '请求失败');
+  return j;
+}
+
+async function apiPut(path, body) {
+  const token = getApiToken();
+  const headers = {'Content-Type':'application/json'};
+  if (token) headers['x-auth-token'] = token;
+  const r = await fetch(API_BASE_URL + path, {method:'PUT', headers, body: JSON.stringify(body)});
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || '请求失败');
+  return j;
+}
+
+async function apiDelete(path) {
+  const token = getApiToken();
+  const headers = {};
+  if (token) headers['x-auth-token'] = token;
+  const r = await fetch(API_BASE_URL + path, {method:'DELETE', headers});
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || '请求失败');
+  return j;
+}
+
+
+function getDefaultData() {
+  return {
+    users: [{
+      id: 'admin_001',
+      phone: 'admin',
+      password: 'Hty070818',
+      nickname: '管理员',
+      avatar: '',
+      bio: '二次元茶话会管理员',
+      role: 'admin',
+      status: 'active',
+      joinTime: Date.now(),
+      followers: [],
+      following: [],
+      likedPosts: [],
+      favoritedPosts: [],
+      lastActive: Date.now(),
+      postsCount: 0
+    }],
+    posts: [],
+    groupMessages: [],
+    privateMessages: [],
+    registeredPhones: ['admin'],
+    adminKey: 'admin888'
+  };
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(DATA_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      // ensure all fields
+      if (!d.privateMessages) d.privateMessages = [];
+      if (!d.groupMessages) d.groupMessages = [];
+      if (!d.registeredPhones) d.registeredPhones = ['admin'];
+      if (!d.adminKey) d.adminKey = 'admin888';
+      d.users.forEach(u => {
+        if (!u.likedPosts) u.likedPosts = [];
+        if (!u.favoritedPosts) u.favoritedPosts = [];
+        if (!u.followers) u.followers = [];
+        if (!u.following) u.following = [];
+        if (!u.bio) u.bio = '';
+        if (!u.postsCount && u.postsCount !== 0) u.postsCount = 0;
+        if (!u.status) u.status = 'active';
+        if (!u.lastActive) u.lastActive = u.joinTime || Date.now();
+      });
+      d.posts.forEach(p => {
+        if (!p.likes) p.likes = [];
+        if (!p.favorites) p.favorites = [];
+        if (!p.comments) p.comments = [];
+        if (!p.views && p.views !== 0) p.views = 0;
+        if (!p.topic) p.topic = 'acg';
+        if (!p.pinned) p.pinned = false;
+      });
+      return d;
+    }
+  } catch(e) {}
+  return getDefaultData();
+}
+
+function saveData() {
+  localStorage.setItem(DATA_KEY, JSON.stringify(data));
+  // Also save to server (fire-and-forget)
+  const token = getApiToken();
+  if (token) {
+    apiPost('/api/save', {
+      posts: data.posts.map(p => ({...p, comments: p.comments || []})),
+      groupMessages: data.groupMessages || [],
+      privateMessages: data.privateMessages || []
+    }).catch(e => console.warn('Server save failed:', e.message));
+  }
+}
+
+let data = loadData();
+// Try to sync from server
+(async function syncFromServer() {
+  try {
+    const token = getApiToken();
+    if (token) {
+      const result = await apiGet('/api/load');
+      data.users = result.users;
+      data.posts = result.posts;
+      data.groupMessages = result.groupMessages;
+      data.privateMessages = result.privateMessages;
+      data.adminKey = result.adminKey;
+      data.registeredPhones = result.registeredPhones || [];
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      // If session token exists but no active session, check if auto-login
+      const savedUid = sessionStorage.getItem('teahouse_session');
+      if (savedUid) {
+        const u = data.users.find(x => x.id === savedUid);
+        if (u && u.status === 'active') {
+          currentUser = u;
+          // Will be rendered by DOMContentLoaded
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Server sync failed, using local data:', e.message);
+  }
+})();
+
+
+// ==================== Utilities ====================
+function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,6); }
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff/60000);
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return mins + '分钟前';
+  const hours = Math.floor(mins/60);
+  if (hours < 24) return hours + '小时前';
+  const days = Math.floor(hours/24);
+  if (days < 7) return days + '天前';
+  return new Date(ts).toLocaleDateString('zh-CN');
+}
+
+function getDefaultAvatar(name) {
+  const colors = ['6366f1','8b5cf6','ec4899','f43f5e','f97316','eab308','22c55e','14b8a6','06b6d4','3b82f6'];
+  const c = colors[name.charCodeAt(0) % colors.length];
+  const char = name.charAt(0) || '?';
+  return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#${c}" rx="50"/><text x="50" y="56" text-anchor="middle" fill="white" font-size="36" font-weight="600" font-family="sans-serif">${char}</text></svg>`)}`;
+}
+
+function getAvatar(user) {
+  return user.avatar || getDefaultAvatar(user.nickname);
+}
+
+let currentUser = null;
+let pendingMedia = [];
+
+let currentPage = 'home';
+let selectedTopic = null;
+let selectedPrivateUser = null;
+let viewingUserId = null;
+
+function getCurrentUser() {
+  return data.users.find(u => u.id === currentUser?.id);
+}
+
+
+// ==================== Floating Particles ====================
+(function initParticles() {
+  const container = document.getElementById('particleContainer');
+  if (!container) return;
+  const colors = ['6366f1', '8b5cf6', 'ec4899', '06b6d4', '22c55e', 'f97316'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 6 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random() * 100}%;
+      background: #${colors[i % colors.length]};
+      animation-duration: ${Math.random() * 20 + 15}s;
+      animation-delay: ${Math.random() * 15}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+
+// ==================== Toast ====================
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 2500);
+}
+
+
+
+// ==================== Media Upload ====================
+function handleMediaSelect() {
+  const input = document.getElementById('mediaInput');
+  const files = Array.from(input.files);
+  const remaining = 9 - pendingMedia.length;
+  
+  if (files.length > remaining) {
+    showToast('最多只能添加9个媒体文件', 'error');
+    return;
+  }
+  
+  let loaded = 0;
+  files.forEach(file => {
+    // Check file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast(file.name + ' 超过5MB限制', 'error');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      pendingMedia.push({
+        data: e.target.result,
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        name: file.name
+      });
+      loaded++;
+      if (loaded === files.length) {
+        input.value = '';
+        renderMediaPreview();
+      }
+    };
+    reader.onerror = function() {
+      showToast('读取文件失败: ' + file.name, 'error');
+      loaded++;
+      if (loaded === files.length) {
+        input.value = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderMediaPreview() {
+  const container = document.getElementById('mediaPreview');
+  container.innerHTML = pendingMedia.map((m, i) => {
+    return '<div class="media-preview-item">' +
+      (m.type === 'video'
+        ? '<video src="' + m.data + '"></video>'
+        : '<img src="' + m.data + '">') +
+      '<button class="remove-media" onclick="removePendingMedia(' + i + ')">✕</button></div>';
+  }).join('');
+}
+
+function removePendingMedia(index) {
+  pendingMedia.splice(index, 1);
+  renderMediaPreview();
+}
+
+function renderPostMedia(media) {
+  if (!media || media.length === 0) return '';
+  const count = media.length;
+  let cls = 'c1';
+  if (count === 2) cls = 'c2';
+  else if (count >= 3) cls = 'c3p';
+  
+  let items = media.map(m => {
+    if (m.type === 'video') {
+      return '<div class="post-media-item">' +
+        '<video src="' + m.data + '" onclick="this.paused ? this.play() : this.pause()" preload="metadata"></video>' +
+        '<div class="video-play-icon">▶</div></div>';
+    } else {
+      var s = m.data; return '<div class="post-media-item"><img src="' + s + '" loading="lazy" onclick="openImageViewer(this.src)"></div>';
+    }
+  }).join('');
+  
+  return '<div class="post-media-grid ' + cls + '">' + items + '</div>';
+}
+
+function renderDetailMedia(media) {
+  if (!media || media.length === 0) return '';
+  return media.map(m => {
+    if (m.type === 'video') {
+      return '<div class="detail-media-item"><video src="' + m.data + '" controls preload="metadata"></video></div>';
+    } else {
+      var s = m.data; return '<div class="detail-media-item"><img src="' + s + '" onclick="openImageViewer(this.src)" style="cursor:pointer"></div>';
+    }
+  }).join('');
+}
+
+function openImageViewer(src) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  overlay.onclick = () => overlay.remove();
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.cssText = 'max-width:92%;max-height:92%;border-radius:8px;object-fit:contain';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+}
+
+
+// ==================== SSE Real-time Sync ====================
+(function connectSSE() {
+  try {
+    const evtSource = new EventSource(API_BASE_URL + '/api/events');
+    evtSource.onmessage = function(e) {
+      try {
+        const d = JSON.parse(e.data);
+        if (d.refresh) {
+          // Quietly sync data from server
+          const token = getApiToken();
+          if (token && currentUser) {
+            apiGet('/api/load').then(result => {
+              data.users = result.users;
+              data.posts = result.posts;
+              data.groupMessages = result.groupMessages;
+              data.privateMessages = result.privateMessages;
+              data.adminKey = result.adminKey;
+              data.registeredPhones = result.registeredPhones || [];
+              localStorage.setItem(DATA_KEY, JSON.stringify(data));
+              // Re-render current page
+              if (currentPage === 'home') renderFeed();
+              else if (currentPage === 'discussion') renderDiscussion();
+              else if (currentPage === 'chat') renderChat();
+              else if (currentPage === 'profile') renderMyProfile();
+            }).catch(() => {});
+          }
+        }
+      } catch(ex) {}
+    };
+    evtSource.onerror = function() {
+      // Reconnect after 5s
+      setTimeout(connectSSE, 5000);
+    };
+  } catch(e) {
+    // SSE not supported, use polling instead
+    setInterval(() => {
+      const token = getApiToken();
+      if (token && currentUser) {
+        apiGet('/api/load').then(result => {
+          const oldLen = data.posts.length + (data.groupMessages||[]).length;
+          data.users = result.users;
+          data.posts = result.posts;
+          data.groupMessages = result.groupMessages;
+          data.privateMessages = result.privateMessages;
+          const newLen = data.posts.length + (data.groupMessages||[]).length;
+          localStorage.setItem(DATA_KEY, JSON.stringify(data));
+          if (newLen !== oldLen && currentPage === 'home') renderFeed();
+          else if (newLen !== oldLen && currentPage === 'discussion') renderDiscussion();
+          else if (newLen !== oldLen && currentPage === 'chat') renderChat();
+        }).catch(() => {});
+      }
+    }, 5000);
+  }
+})();
+
+// ==================== Login / Register ====================
+let loginTab = 'login';
+let showAdminLoginFlag = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+  initLogin();
+  // check if already logged in
+  const saved = sessionStorage.getItem('teahouse_session');
+  if (saved) {
+    const uid = saved;
+    const u = data.users.find(x => x.id === uid);
+    if (u && u.status === 'active') {
+      currentUser = u;
+      enterApp();
+      renderAll();
+      return;
+    }
+  }
+  // seed some demo posts and group messages
+  seedDemoData();
+});
+
+function initLogin() {
+  // Tabs
+  document.querySelectorAll('#loginTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#loginTabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loginTab = btn.dataset.tab;
+      document.getElementById('loginForm').style.display = loginTab === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = loginTab === 'register' ? 'block' : 'none';
+      document.getElementById('loginError').textContent = '';
+      document.getElementById('regError').textContent = '';
+    });
+  });
+  
+  document.getElementById('loginBtn').addEventListener('click', handleLogin);
+  document.getElementById('registerBtn').addEventListener('click', handleRegister);
+  document.getElementById('showAdminLogin').addEventListener('click', () => {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('adminLoginForm').style.display = 'block';
+    document.getElementById('loginError').textContent = '';
+  });
+  document.getElementById('backToUserLogin').addEventListener('click', () => {
+    document.getElementById('adminLoginForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('adminError').textContent = '';
+  });
+  document.getElementById('adminLoginBtn').addEventListener('click', handleAdminLogin);
+  
+  // Enter key support
+  document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') handleLogin(); });
+  document.getElementById('regPassword2').addEventListener('keydown', e => { if(e.key==='Enter') handleRegister(); });
+  document.getElementById('adminKey').addEventListener('keydown', e => { if(e.key==='Enter') handleAdminLogin(); });
+}
+
+function handleLogin() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  
+  if (!phone) { err.textContent = '请输入手机号'; return; }
+  if (!pwd) { err.textContent = '请输入密码'; return; }
+  
+  // Try server login
+  apiPost('/api/login', {phone, password: pwd}).then(r => {
+    setApiToken(r.token, false);
+    currentUser = r.user;
+    sessionStorage.setItem('teahouse_session', r.user.id);
+    err.textContent = '';
+    // Sync data from server
+    return apiGet('/api/load').then(d => {
+      data = { users: d.users, posts: d.posts, groupMessages: d.groupMessages, 
+               privateMessages: d.privateMessages, adminKey: d.adminKey,
+               registeredPhones: d.registeredPhones || [] };
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      enterApp();
+      renderAll();
+    });
+  }).catch(e => {
+    // Fallback: try local login
+    const user = data.users.find(u => u.phone === phone && u.password === pwd);
+    if (!user) { err.textContent = e.message || '手机号或密码错误'; return; }
+    if (user.status === 'banned') { err.textContent = '该账号已被封禁'; return; }
+    if (user.status === 'deactivated') { err.textContent = '该账号已注销'; return; }
+    user.lastActive = Date.now();
+    saveData();
+    currentUser = user;
+    sessionStorage.setItem('teahouse_session', user.id);
+    err.textContent = '';
+    enterApp();
+    renderAll();
+  });
+}
+
+function handleRegister() {
+  const phone = document.getElementById('regPhone').value.trim();
+  const nickname = document.getElementById('regNickname').value.trim();
+  const pwd = document.getElementById('regPassword').value;
+  const pwd2 = document.getElementById('regPassword2').value;
+  const err = document.getElementById('regError');
+  
+  if (!phone || phone.length < 11) { err.textContent = '请输入正确的手机号（11位）'; return; }
+  if (!nickname) { err.textContent = '请输入昵称'; return; }
+  if (pwd.length < 6) { err.textContent = '密码至少6位'; return; }
+  if (pwd !== pwd2) { err.textContent = '两次密码不一致'; return; }
+  
+  // Register via server
+  apiPost('/api/register', {phone, password: pwd, nickname}).then(r => {
+    setApiToken(r.token, false);
+    err.textContent = '';
+    showToast('注册成功！欢迎加入二次元茶话会 🎉', 'success');
+    currentUser = r.user;
+    sessionStorage.setItem('teahouse_session', r.user.id);
+    // Update local data
+    return apiGet('/api/load').then(d => {
+      data = { users: d.users, posts: d.posts, groupMessages: d.groupMessages,
+               privateMessages: d.privateMessages, adminKey: d.adminKey,
+               registeredPhones: d.registeredPhones || [] };
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      enterApp();
+      renderAll();
+    });
+  }).catch(e => {
+    // Fallback: local registration
+    if (data.registeredPhones.includes(phone)) {
+      err.textContent = '该手机号已被注册';
+      return;
+    }
+    const newUser = {
+      id: genId(), phone, password: pwd, nickname, avatar: '', bio: '',
+      role: 'user', status: 'active', joinTime: Date.now(), followers: [],
+      following: [], likedPosts: [], favoritedPosts: [], lastActive: Date.now(), postsCount: 0
+    };
+    data.users.push(newUser);
+    data.registeredPhones.push(phone);
+    saveData();
+    err.textContent = '';
+    showToast('注册成功！欢迎加入二次元茶话会 🎉', 'success');
+    currentUser = newUser;
+    sessionStorage.setItem('teahouse_session', newUser.id);
+    enterApp();
+    renderAll();
+  });
+}
+
+function handleAdminLogin() {
+  const key = document.getElementById('adminKey').value;
+  const phone = document.getElementById('adminPhone').value.trim();
+  const err = document.getElementById('adminError');
+  
+  // Try server admin login
+  apiPost('/api/admin/login', {key, phone}).then(r => {
+    setApiToken(r.token, false);
+    err.textContent = '';
+    return apiGet('/api/load').then(d => {
+      data = { users: d.users, posts: d.posts, groupMessages: d.groupMessages,
+               privateMessages: d.privateMessages, adminKey: d.adminKey,
+               registeredPhones: d.registeredPhones || [] };
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      currentUser = r.user;
+      sessionStorage.setItem('teahouse_session', r.user.id);
+      enterApp();
+      renderAll();
+      showToast('管理员登录成功', 'success');
+    });
+  }).catch(e => {
+    // Fallback: local admin login
+    if (key !== data.adminKey) { err.textContent = '管理员密钥错误'; return; }
+    let admin = data.users.find(u => u.role === 'admin');
+    if (phone) {
+      let u = data.users.find(x => x.phone === phone && x.role === 'admin');
+      if (u) admin = u;
+      else if (phone === 'admin') admin = data.users.find(x => x.id === 'admin_001');
+    }
+    if (!admin) { err.textContent = '未找到管理员账号'; return; }
+    admin.lastActive = Date.now();
+    saveData();
+    currentUser = admin;
+    sessionStorage.setItem('teahouse_session', admin.id);
+    err.textContent = '';
+    enterApp();
+    renderAll();
+    showToast('管理员登录成功', 'success');
+  });
+}
+
+// ==================== App Entry ====================
+function enterApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appMain').style.display = 'block';
+  // Update header avatar
+  updateHeaderUI();
+}
+
+function updateHeaderUI() {
+  const u = getCurrentUser();
+  if (!u) return;
+  document.getElementById('headerAvatar').src = getAvatar(u);
+  document.getElementById('homeAvatar').src = getAvatar(u);
+}
+
+// ==================== Navigation ====================
+document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    switchPage(page);
+  });
+});
+
+function switchPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.bottom-nav .nav-item[data-page="${page}"]`).classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+  
+  if (page === 'home') renderFeed();
+  else if (page === 'discussion') renderDiscussion();
+  else if (page === 'chat') renderChat();
+  else if (page === 'profile') renderMyProfile();
+}
+
+// ==================== Post System ====================
+function openCreatePost() {
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postContent').value = '';
+  document.getElementById('postTopic').value = 'acg';
+  pendingMedia = [];
+  document.getElementById('mediaPreview').innerHTML = '';
+  document.getElementById('mediaInput').value = '';
+  openModal('createPostModal');
+}
+
+function submitPost() {
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const topic = document.getElementById('postTopic').value;
+  const u = getCurrentUser();
+  
+  if (!content && !title) { showToast('请输入帖子内容或标题', 'error'); return; }
+  
+  const post = {
+    id: genId(),
+    userId: u.id,
+    title,
+    content: content || title,
+    topic,
+    likes: [],
+    favorites: [],
+    comments: [],
+    media: pendingMedia.length > 0 ? pendingMedia.slice() : [],
+    pinned: false,
+    pinnedBy: null,
+    createdAt: Date.now(),
+    views: 0
+  };
+  
+  data.posts.unshift(post);
+  u.postsCount = (u.postsCount || 0) + 1;
+  pendingMedia = [];
+  document.getElementById('mediaPreview').innerHTML = '';
+  saveData();
+  closeModal('createPostModal');
+  showToast('发布成功！', 'success');
+  renderFeed();
+}
+
+function renderFeed(filterTopic) {
+  const feed = document.getElementById('postFeed');
+  let posts = [...data.posts];
+  
+  if (filterTopic) {
+    posts = posts.filter(p => p.topic === filterTopic);
+  }
+  
+  // Sort: pinned first, then by time
+  posts.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return b.createdAt - a.createdAt;
+  });
+  
+  if (posts.length === 0) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">还没有帖子，快来发布第一条吧！</div></div>`;
+    return;
+  }
+  
+  feed.innerHTML = posts.map(p => renderPostCard(p)).join('');
+}
+
+function renderPostCard(post) {
+  const author = data.users.find(u => u.id === post.userId);
+  if (!author || author.status === 'deactivated') return '';
+  const u = getCurrentUser();
+  const isLiked = u ? post.likes.includes(u.id) : false;
+  const isFav = u ? post.favorites.includes(u.id) : false;
+  const isPinned = post.pinned;
+  const topicNames = {
+    'acg':'🎮 ACG综合','anime':'🎬 新番讨论','manga':'📖 漫画推荐',
+    'game':'🎮 游戏交流','music':'🎵 音乐推荐','art':'🎨 创作展示',
+    'cos':'📸 COS摄影','life':'💬 日常灌水','other':'📌 其他'
+  };
+  
+  return `
+    <div class="post-card glass ${isPinned ? 'pinned' : ''}">
+      ${isPinned ? '<div class="pin-badge">📌 置顶</div>' : ''}
+      <div class="post-header">
+        <img class="p-avatar" src="${getAvatar(author)}" onclick="visitUserProfile('${author.id}')" title="查看${author.nickname}的主页">
+        <span class="p-author" onclick="visitUserProfile('${author.id}')">${author.nickname}</span>
+        <span class="topic-tag">${topicNames[post.topic] || '📌 其他'}</span>
+        <span class="p-time">${timeAgo(post.createdAt)}</span>
+      </div>
+      ${post.title ? `<div class="post-title">${escHtml(post.title)}</div>` : ''}
+      <div class="post-content">${escHtml(post.content)}</div>
+      ${post.media && post.media.length > 0 ? renderPostMedia(post.media) : ''}
+      <div class="post-actions">
+        <button class="${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+          <svg viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          ${post.likes.length}
+        </button>
+        <button class="${isFav ? 'favorited' : ''}" onclick="toggleFavorite('${post.id}')">
+          <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          ${post.favorites.length}
+        </button>
+        <button onclick="openPostDetail('${post.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          ${post.comments.length}
+        </button>
+        <button onclick="openPostDetail('${post.id}')" style="margin-left:auto;color:var(--primary-light)">
+          查看详情 →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function toggleLike(postId) {
+  const u = getCurrentUser();
+  if (!u) return;
+  const post = data.posts.find(p => p.id === postId);
+  if (!post) return;
+  
+  const idx = post.likes.indexOf(u.id);
+  if (idx > -1) {
+    post.likes.splice(idx, 1);
+  } else {
+    post.likes.push(u.id);
+    // also add to user's likedPosts
+    if (!u.likedPosts.includes(postId)) u.likedPosts.push(postId);
+  }
+  saveData();
+  renderFeed(selectedTopic);
+}
+
+function toggleFavorite(postId) {
+  const u = getCurrentUser();
+  if (!u) return;
+  const post = data.posts.find(p => p.id === postId);
+  if (!post) return;
+  
+  const idx = post.favorites.indexOf(u.id);
+  if (idx > -1) {
+    post.favorites.splice(idx, 1);
+    u.favoritedPosts = (u.favoritedPosts || []).filter(id => id !== postId);
+  } else {
+    post.favorites.push(u.id);
+    if (!u.favoritedPosts.includes(postId)) u.favoritedPosts.push(postId);
+  }
+  saveData();
+  renderFeed(selectedTopic);
+}
+
+// ==================== Post Detail ====================
+function openPostDetail(postId) {
+  const post = data.posts.find(p => p.id === postId);
+  if (!post) return;
+  
+  post.views = (post.views || 0) + 1;
+  saveData();
+  
+  const author = data.users.find(u => u.id === post.userId);
+  if (!author) return;
+  const u = getCurrentUser();
+  const topicNames = {
+    'acg':'🎮 ACG综合','anime':'🎬 新番讨论','manga':'📖 漫画推荐',
+    'game':'🎮 游戏交流','music':'🎵 音乐推荐','art':'🎨 创作展示',
+    'cos':'📸 COS摄影','life':'💬 日常灌水','other':'📌 其他'
+  };
+  
+  let html = `
+    <div class="post-header" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <img src="${getAvatar(author)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="closeModal('postDetailModal');visitUserProfile('${author.id}')">
+      <span style="font-weight:600;font-size:14px;cursor:pointer" onclick="closeModal('postDetailModal');visitUserProfile('${author.id}')">${author.nickname}</span>
+      <span class="topic-tag">${topicNames[post.topic]||'📌 其他'}</span>
+      <span style="font-size:12px;color:var(--text-muted);margin-left:auto">${timeAgo(post.createdAt)}</span>
+    </div>
+    ${post.pinned ? '<div style="color:var(--warning);font-size:13px;margin-bottom:8px">📌 管理员已将此帖置顶</div>' : ''}
+    ${post.title ? `<div style="font-size:16px;font-weight:600;margin-bottom:8px">${escHtml(post.title)}</div>` : ''}
+    <div style="font-size:14px;line-height:1.8;color:var(--text-secondary);margin-bottom:12px;white-space:pre-wrap">${escHtml(post.content)}</div>
+    ${post.media && post.media.length > 0 ? renderDetailMedia(post.media) : ''}
+    <div style="display:flex;gap:16px;font-size:13px;color:var(--text-muted);margin-bottom:12px">
+      <span>❤️ ${post.likes.length} 赞</span>
+      <span>⭐ ${post.favorites.length} 收藏</span>
+      <span>👁️ ${post.views || 0} 浏览</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button style="padding:8px 20px;border:none;border-radius:20px;background:${post.likes.includes(u?.id) ? 'var(--danger)' : 'rgba(255,255,255,0.08)'};color:#fff;cursor:pointer;font-size:13px" onclick="toggleLike('${post.id}');openPostDetail('${post.id}')">
+        ${post.likes.includes(u?.id) ? '❤️ 已赞' : '🤍 点赞'}
+      </button>
+      <button style="padding:8px 20px;border:none;border-radius:20px;background:${post.favorites.includes(u?.id) ? 'var(--warning)' : 'rgba(255,255,255,0.08)'};color:${post.favorites.includes(u?.id) ? '#000' : '#fff'};cursor:pointer;font-size:13px" onclick="toggleFavorite('${post.id}');openPostDetail('${post.id}')">
+        ${post.favorites.includes(u?.id) ? '⭐ 已收藏' : '☆ 收藏'}
+      </button>
+    </div>
+    <div class="comment-section">
+      <div class="comment-input-area">
+        <input type="text" id="commentInput_${post.id}" placeholder="写下你的评论..." maxlength="200">
+        <button onclick="addComment('${post.id}')">发送</button>
+      </div>
+      ${post.comments.map(c => {
+        const cu = data.users.find(x => x.id === c.userId);
+        if (!cu) return '';
+        return `
+          <div class="comment-item">
+            <img class="c-avatar" src="${getAvatar(cu)}" onclick="closeModal('postDetailModal');visitUserProfile('${cu.id}')">
+            <div class="c-body">
+              <span class="c-author" onclick="closeModal('postDetailModal');visitUserProfile('${cu.id}')">${cu.nickname}</span>
+              <div class="c-text">${escHtml(c.content)}</div>
+              <div class="c-time">${timeAgo(c.time)}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  
+  document.getElementById('postDetailContent').innerHTML = html;
+  openModal('postDetailModal');
+}
+
+function addComment(postId) {
+  const input = document.getElementById('commentInput_' + postId);
+  const content = input.value.trim();
+  const u = getCurrentUser();
+  if (!content) { showToast('请输入评论内容', 'error'); return; }
+  
+  const post = data.posts.find(p => p.id === postId);
+  if (!post) return;
+  
+  post.comments.push({
+    userId: u.id,
+    content,
+    time: Date.now()
+  });
+  saveData();
+  showToast('评论成功', 'success');
+  openPostDetail(postId);
+}
+
+// ==================== Discussion Page ====================
+const topicDefs = [
+  { id:'acg', icon:'🎮', name:'ACG综合', desc:'动漫游戏综合讨论' },
+  { id:'anime', icon:'🎬', name:'新番讨论', desc:'追番看番交流' },
+  { id:'manga', icon:'📖', name:'漫画推荐', desc:'漫画安利与吐槽' },
+  { id:'game', icon:'🎮', name:'游戏交流', desc:'游戏攻略与联机' },
+  { id:'music', icon:'🎵', name:'音乐推荐', desc:'好听的ACG音乐' },
+  { id:'art', icon:'🎨', name:'创作展示', desc:'画图、写文、手工' },
+  { id:'cos', icon:'📸', name:'COS摄影', desc:'Cosplay作品分享' },
+  { id:'life', icon:'💬', name:'日常灌水', desc:'什么都聊' },
+  { id:'other', icon:'📌', name:'其他', desc:'无法分类的帖子' }
+];
+
+function renderDiscussion() {
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = topicDefs.map(t => {
+    const count = data.posts.filter(p => p.topic === t.id).length;
+    return `
+      <div class="topic-card glass" onclick="selectTopic('${t.id}')">
+        <div class="topic-icon">${t.icon}</div>
+        <div class="topic-name">${t.name}</div>
+        <div class="topic-count">${count} 个帖子</div>
+      </div>
+    `;
+  }).join('');
+  
+  // If a topic is selected, show filtered posts
+  const container = document.getElementById('discussionPosts');
+  if (selectedTopic) {
+    const t = topicDefs.find(x => x.id === selectedTopic);
+    container.innerHTML = `<h3 style="margin-bottom:12px;font-size:16px">${t ? t.icon + ' ' + t.name : ''} 话题</h3>`;
+    const filtered = data.posts.filter(p => p.topic === selectedTopic);
+    if (filtered.length === 0) {
+      container.innerHTML += `<div class="empty-state"><div class="empty-text">该话题下还没有帖子</div></div>`;
+    } else {
+      container.innerHTML += filtered.map(p => renderPostCard(p)).join('');
+    }
+  } else {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">选择一个话题浏览帖子</div></div>`;
+  }
+}
+
+function selectTopic(topicId) {
+  if (selectedTopic === topicId) {
+    selectedTopic = null;
+  } else {
+    selectedTopic = topicId;
+  }
+  renderDiscussion();
+}
+
+// ==================== Chat System ====================
+let chatTab = 'group';
+
+function renderChat() {
+  document.querySelectorAll('#chatTabs button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`#chatTabs button[data-chat-tab="${chatTab}"]`).classList.add('active');
+  
+  if (chatTab === 'group') {
+    document.getElementById('groupChat').style.display = 'flex';
+    document.getElementById('privateChat').style.display = 'none';
+    renderGroupChat();
+  } else {
+    document.getElementById('groupChat').style.display = 'none';
+    document.getElementById('privateChat').style.display = 'block';
+    renderPrivateChat();
+  }
+}
+
+document.querySelectorAll('#chatTabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    chatTab = btn.dataset.chatTab;
+    renderChat();
+  });
+});
+
+// ---- Group Chat ----
+function renderGroupChat() {
+  const container = document.getElementById('groupChat');
+  const msgs = data.groupMessages || [];
+  
+  let html = `<div class="group-chat-msgs" id="groupChatMsgs">`;
+  if (msgs.length === 0) {
+    html += `<div class="empty-state"><div class="empty-text">还没有群聊消息，来打个招呼吧 👋</div></div>`;
+  } else {
+    html += msgs.map(m => {
+      const u = data.users.find(x => x.id === m.userId);
+      if (!u) return '';
+      return `
+        <div class="gc-msg">
+          <img class="gc-avatar" src="${getAvatar(u)}" onclick="visitUserProfile('${u.id}')">
+          <div class="gc-bubble">
+            <div class="gc-author" onclick="visitUserProfile('${u.id}')">${u.nickname}</div>
+            <div class="gc-text">${escHtml(m.content)}</div>
+            <div class="gc-time">${timeAgo(m.time)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  html += `</div>
+    <div class="gc-input-area">
+      <input type="text" id="gcInput" placeholder="输入群聊消息..." maxlength="500" onkeydown="if(event.key==='Enter')sendGroupMsg()">
+      <button onclick="sendGroupMsg()">发送</button>
+    </div>`;
+  
+  container.innerHTML = html;
+  
+  // Scroll to bottom
+  requestAnimationFrame(() => {
+    const msgsDiv = document.getElementById('groupChatMsgs');
+    if (msgsDiv) msgsDiv.scrollTop = msgsDiv.scrollHeight;
+  });
+}
+
+function sendGroupMsg() {
+  const input = document.getElementById('gcInput');
+  const content = input.value.trim();
+  const u = getCurrentUser();
+  if (!content) return;
+  
+  if (!data.groupMessages) data.groupMessages = [];
+  data.groupMessages.push({
+    id: genId(),
+    userId: u.id,
+    content,
+    time: Date.now()
+  });
+  saveData();
+  input.value = '';
+  renderGroupChat();
+}
+
+// ---- Private Chat ----
+function renderPrivateChat() {
+  renderContacts();
+  if (selectedPrivateUser) {
+    renderPrivateMessages(selectedPrivateUser);
+  }
+}
+
+function getPrivateChatUsers() {
+  const u = getCurrentUser();
+  if (!u) return [];
+  const msgs = data.privateMessages || [];
+  const userIds = new Set();
+  msgs.forEach(m => {
+    if (m.from === u.id) userIds.add(m.to);
+    if (m.to === u.id) userIds.add(m.from);
+  });
+  // Also add users who follow or are followed
+  u.following.forEach(id => userIds.add(id));
+  u.followers.forEach(id => userIds.add(id));
+  
+  return Array.from(userIds).map(id => data.users.find(x => x.id === id)).filter(Boolean);
+}
+
+function renderContacts() {
+  const container = document.getElementById('pcContacts');
+  const u = getCurrentUser();
+  const contacts = data.users.filter(x => x.id !== u.id && x.status === 'active');
+  
+  if (contacts.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:16px;font-size:13px;color:var(--text-muted)">暂无联系人</div>`;
+    return;
+  }
+  
+  container.innerHTML = contacts.map(c => {
+    const unread = (data.privateMessages || []).filter(m => m.from === c.id && m.to === u.id && !m.read).length;
+    return `
+      <div class="pc-contact ${selectedPrivateUser === c.id ? 'active' : ''}" onclick="selectPrivateChat('${c.id}')">
+        <img src="${getAvatar(c)}" alt="">
+        <div class="pc-name">${c.nickname}${unread > 0 ? `<span style="color:var(--danger);margin-left:4px;font-size:11px">(${unread})</span>` : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectPrivateChat(userId) {
+  selectedPrivateUser = userId;
+  renderContacts();
+  renderPrivateMessages(userId);
+}
+
+function renderPrivateMessages(userId) {
+  const target = data.users.find(u => u.id === userId);
+  if (!target) return;
+  
+  document.getElementById('pcChatHeader').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px">
+      <img src="${getAvatar(target)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;cursor:pointer" onclick="visitUserProfile('${target.id}')">
+      <span>${target.nickname}</span>
+    </div>
+  `;
+  
+  const u = getCurrentUser();
+  const msgs = (data.privateMessages || []).filter(m =>
+    (m.from === u.id && m.to === userId) || (m.from === userId && m.to === u.id)
+  );
+  
+  // Mark as read
+  msgs.forEach(m => { if (m.from === userId && m.to === u.id) m.read = true; });
+  saveData();
+  
+  const container = document.getElementById('pcMsgs');
+  if (msgs.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:32px;color:var(--text-muted);font-size:14px">开始聊天吧 💬</div>`;
+  } else {
+    container.innerHTML = msgs.map(m => {
+      const isSelf = m.from === u.id;
+      const sender = data.users.find(x => x.id === m.from);
+      return `
+        <div class="pc-msg-item ${isSelf ? 'self' : ''}">
+          ${!isSelf ? `<img class="pc-msg-avatar" src="${getAvatar(sender)}" onclick="visitUserProfile('${sender.id}')">` : ''}
+          <div>
+            <div class="pc-msg-bubble">${escHtml(m.content)}</div>
+            <div class="pc-msg-time">${timeAgo(m.time)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  container.scrollTop = container.scrollHeight;
+  document.getElementById('pcInputArea').style.display = 'flex';
+  document.getElementById('pcInput').focus();
+}
+
+function sendPrivateMsg() {
+  const input = document.getElementById('pcInput');
+  const content = input.value.trim();
+  const u = getCurrentUser();
+  if (!content || !selectedPrivateUser) return;
+  
+  if (!data.privateMessages) data.privateMessages = [];
+  data.privateMessages.push({
+    id: genId(),
+    from: u.id,
+    to: selectedPrivateUser,
+    content,
+    time: Date.now(),
+    read: false
+  });
+  saveData();
+  input.value = '';
+  renderPrivateMessages(selectedPrivateUser);
+}
+
+// ==================== Profile System ====================
+function renderMyProfile() {
+  const u = getCurrentUser();
+  if (!u) return;
+  
+  const header = document.getElementById('myProfileHeader');
+  header.innerHTML = `
+    <img class="ph-avatar" src="${getAvatar(u)}" onclick="openEditProfile()">
+    <div class="ph-name">${u.nickname}</div>
+    <div class="ph-bio">${u.bio || '这个人很懒，什么都没写~'}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:4px">📱 ${u.phone.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')}</div>
+    <div class="ph-stats">
+      <div><strong>${u.postsCount || 0}</strong><br><span>帖子</span></div>
+      <div><strong>${(u.followers||[]).length}</strong><br><span>粉丝</span></div>
+      <div><strong>${(u.following||[]).length}</strong><br><span>关注</span></div>
+    </div>
+  `;
+  
+  const actions = document.getElementById('myProfileActions');
+  actions.innerHTML = `
+    <button class="btn-primary2" onclick="openEditProfile()">编辑资料</button>
+    <button class="btn-outline" onclick="openModal('colorThemeModal');renderColorPicker()">🎨 主题颜色</button>
+    ${u.role === 'admin' ? `<button class="btn-primary2" onclick="openAdminDashboard()" style="background:var(--warning);color:#000">🛡️ 管理后台</button>` : ''}
+    <button class="btn-outline" onclick="logout()" style="color:var(--danger)">退出登录</button>
+  `;
+  
+  showProfileTab('posts');
+}
+
+let profileTab = 'posts';
+
+document.querySelectorAll('#profileTabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    profileTab = btn.dataset.ptab;
+    document.querySelectorAll('#profileTabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (profileTab === 'posts') {
+      document.getElementById('profilePosts').style.display = 'block';
+      document.getElementById('profileSettings').style.display = 'none';
+      showProfileTab('posts');
+    } else {
+      document.getElementById('profilePosts').style.display = 'none';
+      document.getElementById('profileSettings').style.display = 'block';
+      renderSettings();
+    }
+  });
+});
+
+function showProfileTab(tab) {
+  const u = getCurrentUser();
+  if (tab === 'posts') {
+    const myPosts = data.posts.filter(p => p.userId === u.id);
+    const container = document.getElementById('profilePosts');
+    if (myPosts.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-text">你还没有发过帖子</div></div>`;
+    } else {
+      container.innerHTML = myPosts.map(p => renderPostCard(p)).join('');
+    }
+  }
+}
+
+// ==================== Settings ====================
+function renderSettings() {
+  const u = getCurrentUser();
+  const container = document.getElementById('profileSettings');
+  container.innerHTML = `
+    <div class="settings-list">
+      <div class="settings-item glass" onclick="openEditProfile()">
+        <span class="si-label">📝 编辑资料</span>
+        <span class="si-value">修改昵称、简介、头像 →</span>
+      </div>
+      <div class="settings-item glass" onclick="openModal('colorThemeModal');renderColorPicker()">
+        <span class="si-label">🎨 主题颜色</span>
+        <span class="si-value">切换界面颜色 →</span>
+      </div>
+      <div class="settings-item glass" onclick="showMyLikedPosts()">
+        <span class="si-label">❤️ 我的点赞</span>
+        <span class="si-value">${(u.likedPosts||[]).length} 个帖子 →</span>
+      </div>
+      <div class="settings-item glass" onclick="showMyFavorites()">
+        <span class="si-label">⭐ 我的收藏</span>
+        <span class="si-value">${(u.favoritedPosts||[]).length} 个帖子 →</span>
+      </div>
+      <div class="settings-item glass" onclick="if(confirm('确定要注销账号吗？此操作不可撤销！')){deactivateAccount()}">
+        <span class="si-label" style="color:var(--danger)">🗑️ 注销账号</span>
+        <span class="si-value" style="color:var(--danger)">删除所有数据 →</span>
+      </div>
+    </div>
+  `;
+}
+
+function showMyLikedPosts() {
+  const u = getCurrentUser();
+  const liked = data.posts.filter(p => p.likes.includes(u.id));
+  const feed = document.getElementById('postFeed');
+  switchPage('home');
+  if (liked.length === 0) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">❤️</div><div class="empty-text">还没有点赞过帖子</div></div>`;
+  } else {
+    feed.innerHTML = liked.map(p => renderPostCard(p)).join('');
+  }
+}
+
+function showMyFavorites() {
+  const u = getCurrentUser();
+  const favs = data.posts.filter(p => p.favorites.includes(u.id));
+  const feed = document.getElementById('postFeed');
+  switchPage('home');
+  if (favs.length === 0) {
+    feed.innerHTML = `<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-text">还没有收藏过帖子</div></div>`;
+  } else {
+    feed.innerHTML = favs.map(p => renderPostCard(p)).join('');
+  }
+}
+
+// ==================== Edit Profile ====================
+function openEditProfile() {
+  const u = getCurrentUser();
+  document.getElementById('editNickname').value = u.nickname;
+  document.getElementById('editBio').value = u.bio || '';
+  document.getElementById('editAvatar').value = u.avatar || '';
+  openModal('editProfileModal');
+}
+
+function saveProfile() {
+  const u = getCurrentUser();
+  const nickname = document.getElementById('editNickname').value.trim();
+  const bio = document.getElementById('editBio').value.trim();
+  const avatar = document.getElementById('editAvatar').value.trim();
+  
+  if (!nickname) { showToast('昵称不能为空', 'error'); return; }
+  
+  u.nickname = nickname;
+  u.bio = bio || '';
+  u.avatar = avatar || '';
+  saveData();
+  closeModal('editProfileModal');
+  updateHeaderUI();
+  renderMyProfile();
+  renderFeed(selectedTopic);
+  showToast('资料更新成功', 'success');
+}
+
+// ==================== Visit User Profile ====================
+function visitUserProfile(userId) {
+  const u = data.users.find(x => x.id === userId);
+  if (!u) return;
+  const me = getCurrentUser();
+  
+  const isMe = me && me.id === userId;
+  const isFollowing = me ? (me.following || []).includes(userId) : false;
+  
+  const userPosts = data.posts.filter(p => p.userId === userId);
+  
+  let html = `
+    <img class="vp-avatar" src="${getAvatar(u)}">
+    <div class="vp-name">${u.nickname}${u.role === 'admin' ? ' 🛡️' : ''}</div>
+    <div class="vp-bio">${u.bio || '这个人很懒，什么都没写~'}</div>
+    <div class="vp-stats">
+      <div><strong>${u.postsCount || 0}</strong><br><span>帖子</span></div>
+      <div><strong id="vpFollowerCount">${(u.followers||[]).length}</strong><br><span>粉丝</span></div>
+      <div><strong>${(u.following||[]).length}</strong><br><span>关注</span></div>
+    </div>
+  `;
+  
+  if (!isMe) {
+    html += `
+      <div class="vp-actions">
+        <button style="background:var(--primary);color:#fff" onclick="toggleFollow('${userId}')" id="followBtn">
+          ${isFollowing ? '✅ 已关注' : '➕ 关注'}
+        </button>
+        <button style="background:rgba(255,255,255,0.1);color:#fff" onclick="startPrivateChat('${userId}')">
+          💬 私聊
+        </button>
+      </div>
+    `;
+  }
+  
+  html += `<div class="vp-posts-title">${u.nickname} 的作品 (${userPosts.length})</div>`;
+  
+  if (userPosts.length === 0) {
+    html += `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:14px">暂无帖子</div>`;
+  } else {
+    html += userPosts.slice(0, 10).map(p => renderPostCard(p)).join('');
+  }
+  
+  document.getElementById('visitProfileContent').innerHTML = html;
+  openModal('visitProfileModal');
+}
+
+function toggleFollow(targetId) {
+  const me = getCurrentUser();
+  if (!me) return;
+  const target = data.users.find(u => u.id === targetId);
+  if (!target) return;
+  
+  const idx = (me.following || []).indexOf(targetId);
+  if (idx > -1) {
+    me.following.splice(idx, 1);
+    target.followers = (target.followers || []).filter(id => id !== me.id);
+    showToast('已取消关注', 'info');
+  } else {
+    if (!me.following) me.following = [];
+    me.following.push(targetId);
+    if (!target.followers) target.followers = [];
+    if (!target.followers.includes(me.id)) target.followers.push(me.id);
+    showToast('关注成功', 'success');
+  }
+  saveData();
+  visitUserProfile(targetId);
+  renderMyProfile();
+}
+
+function startPrivateChat(userId) {
+  closeModal('visitProfileModal');
+  selectedPrivateUser = userId;
+  chatTab = 'private';
+  switchPage('chat');
+  renderChat();
+}
+
+// ==================== Color Theme ====================
+const themeColors = [
+  { name:'极光紫', value:'#6366f1' },
+  { name:'樱花粉', value:'#ec4899' },
+  { name:'薄荷绿', value:'#22c55e' },
+  { name:'天空蓝', value:'#3b82f6' },
+  { name:'落日橙', value:'#f97316' },
+  { name:'玫瑰红', value:'#ef4444' },
+  { name:'星耀黄', value:'#eab308' },
+  { name:'宝石蓝', value:'#06b6d4' },
+  { name:'薰衣草', value:'#8b5cf6' },
+  { name:'抹茶绿', value:'#84cc16' },
+  { name:'珊瑚橘', value:'#f43f5e' },
+  { name:'冰川蓝', value:'#0ea5e9' }
+];
+
+function renderColorPicker() {
+  const grid = document.getElementById('colorPickerGrid');
+  const currentColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+  
+  grid.innerHTML = themeColors.map(c => `
+    <div class="color-pick ${c.value === currentColor ? 'selected' : ''}" 
+         style="background:${c.value}" 
+         title="${c.name}"
+         onclick="setThemeColor('${c.value}')">
+    </div>
+  `).join('');
+}
+
+function setThemeColor(color) {
+  document.documentElement.style.setProperty('--primary', color);
+  document.documentElement.style.setProperty('--primary-light', color + 'cc');
+  renderColorPicker();
+  localStorage.setItem('teahouse_theme_color', color);
+  showToast('主题颜色已更新', 'success');
+}
+
+// Load saved theme
+const savedColor = localStorage.getItem('teahouse_theme_color');
+if (savedColor) {
+  document.documentElement.style.setProperty('--primary', savedColor);
+  document.documentElement.style.setProperty('--primary-light', savedColor + 'cc');
+}
+
+// ==================== Admin Dashboard ====================
+function openAdminDashboard() {
+  renderAdminDashboard();
+  openModal('adminModal');
+}
+
+function renderAdminDashboard() {
+  const dashboard = document.getElementById('adminDashboard');
+  const activeUsers = data.users.filter(u => u.status === 'active' && u.role !== 'admin');
+  const bannedUsers = data.users.filter(u => u.status === 'banned');
+  const totalPosts = data.posts.length;
+  const totalViews = data.posts.reduce((sum, p) => sum + (p.views || 0), 0);
+  const totalMessages = (data.groupMessages || []).length + (data.privateMessages || []).length;
+  
+  // Most active users
+  const userActivity = data.users.filter(u => u.role !== 'admin').map(u => ({
+    ...u,
+    totalLikes: data.posts.filter(p => p.userId === u.id).reduce((s, p) => s + p.likes.length, 0),
+    totalPosts: data.posts.filter(p => p.userId === u.id).length,
+    totalComments: data.posts.reduce((s, p) => s + p.comments.filter(c => c.userId === u.id).length, 0)
+  })).sort((a, b) => (b.totalPosts + b.totalLikes + b.totalComments) - (a.totalPosts + a.totalLikes + a.totalComments));
+  
+  dashboard.innerHTML = `
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--primary)">${activeUsers.length}</div><div class="stat-label">活跃用户</div></div>
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--danger)">${bannedUsers.length}</div><div class="stat-label">封禁用户</div></div>
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--success)">${totalPosts}</div><div class="stat-label">总帖子数</div></div>
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--warning)">${totalViews}</div><div class="stat-label">总浏览量</div></div>
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--primary-light)">${totalMessages}</div><div class="stat-label">总消息数</div></div>
+      <div class="admin-stat-card glass"><div class="stat-num" style="color:var(--success)">${data.users.filter(u => u.role!=='admin').length}</div><div class="stat-label">注册用户</div></div>
+    </div>
+    
+    <div class="admin-tabs" id="adminTabs">
+      <button class="active" data-admin-tab="users">用户管理</button>
+      <button data-admin-tab="posts">帖子管理</button>
+      <button data-admin-tab="activity">活跃度排行</button>
+      <button data-admin-tab="data">数据概览</button>
+    </div>
+    
+    <div id="adminTabContent">
+      ${renderAdminUsers()}
+    </div>
+  `;
+  
+  // Admin tabs
+  document.querySelectorAll('#adminTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#adminTabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.adminTab;
+      const content = document.getElementById('adminTabContent');
+      if (tab === 'users') content.innerHTML = renderAdminUsers();
+      else if (tab === 'posts') content.innerHTML = renderAdminPosts();
+      else if (tab === 'activity') content.innerHTML = renderAdminActivity(userActivity);
+      else if (tab === 'data') content.innerHTML = renderAdminData();
+    });
+  });
+}
+
+function renderAdminUsers() {
+  const users = data.users.filter(u => u.role !== 'admin');
+  if (users.length === 0) return `<div class="empty-state"><div class="empty-text">暂无用户</div></div>`;
+  
+  return `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>用户</th>
+            <th>手机号</th>
+            <th>状态</th>
+            <th>帖子</th>
+            <th>粉丝</th>
+            <th>活跃时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(u => `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <img src="${getAvatar(u)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">
+                  <span>${u.nickname}</span>
+                </div>
+              </td>
+              <td style="font-size:12px;color:var(--text-muted)">${u.phone.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')}</td>
+              <td><span class="status-badge ${u.status}">${u.status === 'active' ? '正常' : u.status === 'banned' ? '封禁' : '注销'}</span></td>
+              <td>${u.postsCount || 0}</td>
+              <td>${(u.followers||[]).length}</td>
+              <td style="font-size:12px;color:var(--text-muted)">${timeAgo(u.lastActive || u.joinTime)}</td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-pin" onclick="openAdminEditUser('${u.id}')" style="background:var(--primary);color:#fff;font-size:12px">编辑</button>
+                  ${u.status === 'active' 
+                    ? `<button class="btn-ban" onclick="banUser('${u.id}')">封禁</button>` 
+                    : `<button class="btn-unban" onclick="unbanUser('${u.id}')">解封</button>`
+                  }
+                  <button class="btn-delete" onclick="deleteUser('${u.id}')">注销</button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminPosts() {
+  const posts = [...data.posts].sort((a,b) => b.createdAt - a.createdAt);
+  if (posts.length === 0) return `<div class="empty-state"><div class="empty-text">暂无帖子</div></div>`;
+  
+  return `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>内容</th>
+            <th>作者</th>
+            <th>点赞</th>
+            <th>收藏</th>
+            <th>评论</th>
+            <th>浏览</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${posts.map(p => {
+            const author = data.users.find(u => u.id === p.userId);
+            return `
+              <tr>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.title || p.content).slice(0, 30)}</td>
+                <td style="font-size:12px">${author ? author.nickname : '已注销'}</td>
+                <td>${p.likes.length}</td>
+                <td>${p.favorites.length}</td>
+                <td>${p.comments.length}</td>
+                <td>${p.views || 0}</td>
+                <td>${p.pinned ? '<span style="color:var(--warning)">📌 置顶</span>' : '<span style="color:var(--text-muted)">普通</span>'}</td>
+                <td>
+                  <div class="action-btns">
+                    ${p.pinned 
+                      ? `<button class="btn-unpin" onclick="togglePinPost('${p.id}')">取消置顶</button>` 
+                      : `<button class="btn-pin" onclick="togglePinPost('${p.id}')">置顶</button>`
+                    }
+                    <button class="btn-delete" onclick="deletePost('${p.id}')">删除</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminActivity(userActivity) {
+  if (userActivity.length === 0) return `<div class="empty-state"><div class="empty-text">暂无用户数据</div></div>`;
+  
+  return `
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>用户</th>
+            <th>帖子数</th>
+            <th>获赞数</th>
+            <th>评论数</th>
+            <th>活跃指数</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${userActivity.map((u, i) => {
+            const score = u.totalPosts + u.totalLikes + u.totalComments;
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}`;
+            return `
+              <tr>
+                <td style="font-weight:600;font-size:16px">${medal}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <img src="${getAvatar(u)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">
+                    <span>${u.nickname}</span>
+                  </div>
+                </td>
+                <td>${u.totalPosts}</td>
+                <td>${u.totalLikes}</td>
+                <td>${u.totalComments}</td>
+                <td><div style="background:rgba(99,102,241,0.2);border-radius:10px;height:20px;width:${Math.min(100, (score / Math.max(...userActivity.map(x => x.totalPosts + x.totalLikes + x.totalComments), 1)) * 100)}%"></div></td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminData() {
+  const now = Date.now();
+  const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const monthAgo = now - 30 * 24 * 60 * 60 * 1000;
+  
+  const weekPosts = data.posts.filter(p => p.createdAt > weekAgo).length;
+  const monthPosts = data.posts.filter(p => p.createdAt > monthAgo).length;
+  const weekUsers = data.users.filter(u => u.joinTime > weekAgo && u.role !== 'admin').length;
+  const weekMessages = (data.groupMessages || []).filter(m => m.time > weekAgo).length;
+  
+  // Topic distribution
+  const topicCounts = {};
+  data.posts.forEach(p => {
+    topicCounts[p.topic] = (topicCounts[p.topic] || 0) + 1;
+  });
+  const topicNames = { 'acg':'ACG综合','anime':'新番讨论','manga':'漫画推荐','game':'游戏交流','music':'音乐推荐','art':'创作展示','cos':'COS摄影','life':'日常灌水','other':'其他' };
+  
+  return `
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
+      <div class="glass" style="padding:14px">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">📊 近7天</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+          <div>新帖子: <strong>${weekPosts}</strong></div>
+          <div>新用户: <strong>${weekUsers}</strong></div>
+          <div>新消息: <strong>${weekMessages}</strong></div>
+          <div>总帖子: <strong>${data.posts.length}</strong></div>
+        </div>
+      </div>
+      <div class="glass" style="padding:14px">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">📅 近30天</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px">
+          <div>新帖子: <strong>${monthPosts}</strong></div>
+          <div>活跃用户: <strong>${data.users.filter(u => u.lastActive > monthAgo && u.role !== 'admin').length}</strong></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass" style="padding:14px;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">📂 话题分布</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${Object.entries(topicCounts).sort((a,b) => b[1]-a[1]).map(([t,c]) => `
+          <div style="background:rgba(99,102,241,0.15);padding:6px 12px;border-radius:12px;font-size:13px">
+            ${topicNames[t]||t}: <strong>${c}</strong>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div class="glass" style="padding:14px">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">🏆 平台概览</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:14px">
+        <div>注册用户: <strong>${data.users.filter(u=>u.role!=='admin').length}</strong></div>
+        <div>总帖子: <strong>${data.posts.length}</strong></div>
+        <div>总评论: <strong>${data.posts.reduce((s,p)=>s+p.comments.length,0)}</strong></div>
+        <div>总点赞: <strong>${data.posts.reduce((s,p)=>s+p.likes.length,0)}</strong></div>
+        <div>总收藏: <strong>${data.posts.reduce((s,p)=>s+p.favorites.length,0)}</strong></div>
+        <div>总消息: <strong>${totalMessages()}</strong></div>
+      </div>
+    </div>
+  `;
+}
+
+function totalMessages() {
+  return (data.groupMessages || []).length + (data.privateMessages || []).length;
+}
+
+// Admin Actions
+
+// ==================== Admin Edit User ====================
+let adminEditingUserId = null;
+
+function openAdminEditUser(userId) {
+  const u = data.users.find(x => x.id === userId);
+  if (!u) { showToast('用户不存在', 'error'); return; }
+  adminEditingUserId = userId;
+  document.getElementById('adminEditNickname').value = u.nickname;
+  document.getElementById('adminEditPassword').value = '';
+  openModal('adminEditUserModal');
+}
+
+function saveAdminEdit() {
+  const u = data.users.find(x => x.id === adminEditingUserId);
+  if (!u) { showToast('用户不存在', 'error'); return; }
+  
+  const newName = document.getElementById('adminEditNickname').value.trim();
+  const newPwd = document.getElementById('adminEditPassword').value.trim();
+  
+  if (!newName) { showToast('昵称不能为空', 'error'); return; }
+  
+  u.nickname = newName;
+  if (newPwd) {
+    u.password = newPwd;
+    showToast('昵称和密码已更新', 'success');
+  } else {
+    showToast('昵称已更新', 'success');
+  }
+  
+  saveData();
+  closeModal('adminEditUserModal');
+  renderAdminDashboard();
+  renderFeed();
+}
+
+function banUser(userId) {
+  if (!confirm('确定封禁该用户吗？')) return;
+  const u = data.users.find(x => x.id === userId);
+  if (u) { u.status = 'banned'; saveData(); showToast('已封禁用户：' + u.nickname, 'error'); renderAdminDashboard(); }
+}
+
+function unbanUser(userId) {
+  const u = data.users.find(x => x.id === userId);
+  if (u) { u.status = 'active'; saveData(); showToast('已解封用户：' + u.nickname, 'success'); renderAdminDashboard(); }
+}
+
+function deleteUser(userId) {
+  if (!confirm('确定注销该用户吗？此操作不可撤销！')) return;
+  const u = data.users.find(x => x.id === userId);
+  if (u) { u.status = 'deactivated'; saveData(); showToast('已注销用户', 'info'); renderAdminDashboard(); }
+}
+
+function deletePost(postId) {
+  if (!confirm('确定删除该帖子吗？')) return;
+  const idx = data.posts.findIndex(p => p.id === postId);
+  if (idx > -1) {
+    const post = data.posts[idx];
+    // Reduce author's post count
+    const author = data.users.find(u => u.id === post.userId);
+    if (author) author.postsCount = Math.max(0, (author.postsCount || 0) - 1);
+    data.posts.splice(idx, 1);
+    saveData();
+    showToast('帖子已删除', 'info');
+    renderAdminDashboard();
+    renderFeed(selectedTopic);
+  }
+}
+
+function togglePinPost(postId) {
+  const post = data.posts.find(p => p.id === postId);
+  if (!post) return;
+  post.pinned = !post.pinned;
+  post.pinnedBy = post.pinned ? getCurrentUser().id : null;
+  saveData();
+  showToast(post.pinned ? '帖子已置顶' : '已取消置顶', 'info');
+  renderAdminDashboard();
+  renderFeed(selectedTopic);
+}
+
+// ==================== Logout ====================
+function logout() {
+  if (!confirm('确定退出登录吗？')) return;
+  sessionStorage.removeItem('teahouse_session');
+  currentUser = null;
+  document.getElementById('appMain').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginPhone').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+// ==================== Deactivate Account ====================
+function deactivateAccount() {
+  const u = getCurrentUser();
+  if (!u) return;
+  u.status = 'deactivated';
+  saveData();
+  showToast('账号已注销', 'info');
+  logout();
+}
+
+// ==================== Modal Helpers ====================
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', (e) => {
+    if (e.target === el) el.classList.remove('show');
+  });
+});
+
+// ==================== Show My Profile from Header ====================
+function showMyProfile() {
+  switchPage('profile');
+  renderMyProfile();
+}
+
+// ==================== Render All ====================
+function renderAll() {
+  updateHeaderUI();
+  renderFeed();
+  renderDiscussion();
+}
+
+// ==================== Seed Demo Data ====================
+function seedDemoData() {
+  // Don't seed if we have server data or local data
+  if (data.posts.length > 0) return;
+  // Also check server
+  const token = getApiToken();
+  if (token) return;
+  
+  const admin = data.users.find(u => u.id === 'admin_001');
+  if (!admin) return;
+  
+  // Create demo users
+  const demoUsers = [
+    { nickname:'樱花漫舞', phone:'13912345678', bio:'喜欢看番的二次元少女🌸' },
+    { nickname:'星空旅人', phone:'13912345679', bio:'ACG音乐爱好者 🎵' },
+    { nickname:'纸片人老公', phone:'13912345670', bio:'追番狂魔，每月30+新番' },
+    { nickname:'画触小新', phone:'13912345671', bio:'业余画师，接稿私信' },
+    { nickname:'游戏宅', phone:'13912345672', bio:'Steam 500+游戏库存' }
+  ];
+  
+  const createdUsers = [];
+  demoUsers.forEach(du => {
+    const id = genId();
+    const user = {
+      id,
+      phone: du.phone,
+      password: '123456',
+      nickname: du.nickname,
+      avatar: '',
+      bio: du.bio,
+      role: 'user',
+      status: 'active',
+      joinTime: Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000),
+      followers: [],
+      following: [],
+      likedPosts: [],
+      favoritedPosts: [],
+      lastActive: Date.now() - Math.floor(Math.random() * 2 * 60 * 60 * 1000),
+      postsCount: 0
+    };
+    data.users.push(user);
+    data.registeredPhones.push(du.phone);
+    createdUsers.push(user);
+  });
+  
+  // Create demo posts
+  const demoPosts = [
+    { title:'刚看完间谍过家家剧场版！', content:'太感动了，安妮亚真的太可爱了！强烈推荐大家去看！😭\n这一部的剧情比第一季还要精彩，打斗场面也很燃。', topic:'anime', userId:createdUsers[0].id },
+    { title:'推荐一首最近循环的曲子', content:'ずっと真夜中でいいのに。的《秒針を噛む》真的太上头了！\n这首歌的编曲很特别，尤其是鼓点的部分。', topic:'music', userId:createdUsers[1].id },
+    { title:'这季新番大家在看什么？', content:'我目前在追的有：\n1. 咒术回战 第二季\n2. 葬送的芙莉莲\n3. 药屋少女的呢喃\n大家有什么推荐的吗？', topic:'anime', userId:createdUsers[2].id },
+    { title:'最近画的一张原创角色', content:'画了一个下午终于画完了！设定是魔法学院的图书馆管理员，喜欢大家～\n（使用Procreate绘画）', topic:'art', userId:createdUsers[3].id },
+    { title:'老头环DLC通关感想', content:'终于把黄金树之影打通了！\n这次的BOSS设计真的绝了，米凯拉的故事也让人意难平...\n总时长大约30小时，内容丰富度很高。', topic:'game', userId:createdUsers[4].id },
+    { title:'来分享你们最喜欢的漫画吧！', content:'我个人最喜欢《葬送的芙莉莲》和《迷宫饭》，画风和剧情都在线。\n大家有什么私藏的好漫画推荐吗？', topic:'manga', userId:createdUsers[0].id },
+    { title:'茶话会公告：欢迎新朋友们！', content:'欢迎来到二次元茶话会！🎉\n这里是一个属于二次元爱好者的社区，大家可以在这里：\n📝 发帖分享你的热爱\n💬 和同好们聊天交流\n🎨 展示自己的创作\n希望大家玩得开心！', topic:'life', userId:admin.id }
+  ];
+  
+  demoPosts.forEach((dp, i) => {
+    const post = {
+      id: genId(),
+      userId: dp.userId,
+      title: dp.title,
+      content: dp.content,
+      topic: dp.topic,
+      likes: [],
+      favorites: [],
+      comments: [],
+      pinned: i === demoPosts.length - 1, // last post pinned
+      pinnedBy: i === demoPosts.length - 1 ? admin.id : null,
+      createdAt: Date.now() - (demoPosts.length - i) * 2 * 60 * 60 * 1000,
+      views: Math.floor(Math.random() * 100) + 10
+    };
+    data.posts.push(post);
+    
+    const author = data.users.find(u => u.id === dp.userId);
+    if (author) author.postsCount = (author.postsCount || 0) + 1;
+    
+    // Add some likes
+    const likeUsers = createdUsers.filter((_, j) => j !== i % createdUsers.length);
+    likeUsers.slice(0, Math.floor(Math.random() * 3) + 1).forEach(u => {
+      if (!post.likes.includes(u.id)) post.likes.push(u.id);
+    });
+    
+    // Add some comments to first post
+    if (i === 0) {
+      post.comments.push({ userId: createdUsers[2].id, content: '同感！安妮亚太可爱了，我也刚看完 🥰', time: Date.now() - 3600000 });
+      post.comments.push({ userId: createdUsers[4].id, content: '我觉得打斗场面比第一部好太多了！', time: Date.now() - 1800000 });
+    }
+  });
+  
+  // Add some follow relationships
+  createdUsers[0].following.push(createdUsers[1].id, createdUsers[2].id);
+  createdUsers[1].followers.push(createdUsers[0].id);
+  createdUsers[2].followers.push(createdUsers[0].id);
+  createdUsers[3].following.push(createdUsers[0].id);
+  createdUsers[0].followers.push(createdUsers[3].id);
+  
+  // Add some group messages
+  data.groupMessages = [
+    { id: genId(), userId: createdUsers[0].id, content: '大家晚上好呀！今天看番了吗 👋', time: Date.now() - 7200000 },
+    { id: genId(), userId: createdUsers[2].id, content: '正在补间谍过家家，太好看了！', time: Date.now() - 7000000 },
+    { id: genId(), userId: createdUsers[1].id, content: '推荐一首歌：KICK BACK - 米津玄师 🎵', time: Date.now() - 6500000 },
+    { id: genId(), userId: createdUsers[4].id, content: '有没有人联机打游戏？', time: Date.now() - 6000000 },
+    { id: genId(), userId: createdUsers[3].id, content: '刚画完一张图，等下发到创作区~', time: Date.now() - 3600000 }
+  ];
+  
+  // Add some private messages
+  data.privateMessages = [
+    { id: genId(), from: createdUsers[0].id, to: createdUsers[1].id, content: '你好呀！我也喜欢ACG音乐，可以聊聊吗？', time: Date.now() - 86400000, read: true },
+    { id: genId(), from: createdUsers[1].id, to: createdUsers[0].id, content: '当然可以！你最喜欢什么类型的音乐？', time: Date.now() - 82800000, read: true },
+    { id: genId(), from: createdUsers[0].id, to: createdUsers[1].id, content: '我喜欢J-POP和动漫歌曲，比如YOASOBI、Ado这些', time: Date.now() - 80000000, read: true }
+  ];
+  
+  saveData();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+teahouse.db
+.DS_Store
+backend/node_modules/
+backend/teahouse.db
